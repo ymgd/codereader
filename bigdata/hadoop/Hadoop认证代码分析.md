@@ -213,6 +213,123 @@ commit方法是HadoopLoginModule的认证流程所在的主要地方，整个代
 
 可以看到，当把HADOOP_USER_NAME设置为用户名chinahadoop之后，再进行后续的操作，用户名都会是chinahadoop。
 
+##三、Hadoop认证机制触发流程
+
+以上描述了Hadoop认证机制的基本原理。下面具体屡一下Hadoop中一个用户登录（认证）操作流程是如何的。
+
+从一个使用场景开始：
+
+    public static FileSystem get(final URI uri, final Configuration conf,
+          final String user) throws IOException, InterruptedException {
+      String ticketCachePath =
+        conf.get(CommonConfigurationKeys.KERBEROS_TICKET_CACHE_PATH);
+      UserGroupInformation ugi =
+          UserGroupInformation.getBestUGI(ticketCachePath, user);
+      return ugi.doAs(new PrivilegedExceptionAction<FileSystem>() {
+        @Override
+        public FileSystem run() throws IOException {
+          return get(uri, conf);
+        }
+      });
+    }
+
+这是org.apache.hadoop.fs.FileSystem中的get方法，用户通过调用该方法获取FileSystem实例，然后操作hdfs文件系统。
+
+因为hadoop分布式文件系统（hdfs）中对于目录的访问需要根据用户进行权限区分（类似于Linux文件系统），所以在这个get方法的实现中，需要具备区分用户的能力。
+
+方法中的UserGroupInformation.getBestUGI调用便是这样一个入口，根据当前的配置情况，该方法最终返回的UserGroupInformation类对象，包含了当前用户的信息。
+
+继续看UserGroupInformation.getBestUGI实现：
+
+    public static UserGroupInformation getBestUGI(
+        String ticketCachePath, String user) throws IOException {
+      if (ticketCachePath != null) {
+        return getUGIFromTicketCache(ticketCachePath, user);
+      } else if (user == null) {
+        return getCurrentUser();
+      } else {
+        return createRemoteUser(user);
+      }    
+    }
+
+代码中基于性能（cache）、功能完整性（支持多种认证方式）等考虑，会有多种分支处理，这里我们研究我们最主要的关注点。
+
+getBestUGI方法中，当用户未认证时，if (user == null) 条件被满足 ，调用getCurrentUser。继续看看getCurrentUser的实现：
+
+    static UserGroupInformation getCurrentUser() throws IOException {
+      AccessControlContext context = AccessController.getContext();
+      Subject subject = Subject.getSubject(context);
+      if (subject == null || subject.getPrincipals(User.class).isEmpty()) {
+        return getLoginUser();
+      } else {
+        return new UserGroupInformation(subject);
+      }
+    }
+
+用户未认证之前，subject为null（如前面内容描述，subject在LoginModule的commit中被设置好），调用getLoginUser。getLoginUser代码：
+
+    static UserGroupInformation getLoginUser() throws IOException {
+      if (loginUser == null) {
+        loginUserFromSubject(null);
+      }
+      return loginUser;
+    }
+
+loginUser为空，继续调用loginUserFromSubject：
+
+    @InterfaceAudience.Public
+    @InterfaceStability.Evolving
+    public synchronized 
+    static void loginUserFromSubject(Subject subject) throws IOException {
+      ensureInitialized();
+      try {
+        if (subject == null) {
+          subject = new Subject();
+        }
+        // 创建LoginContext，传入的HadoopConfiguration对象会读入hadoop配置，如果配置
+        // 项hadoop.security.authentication的值为simple，会走入我们前面描述的
+        // SimpleEntry逻辑。（其他配置项时也会获取相应LogingEntry，我们这里以simple为
+        // 研究示例。
+        LoginContext login =
+            newLoginContext(authenticationMethod.getLoginAppName(), 
+                            subject, new HadoopConfiguration());
+
+        // LoginContext的login方法调用，会触发关联到的LoginModule的login、commit等
+        // 一系列方法调用
+        login.login();
+        UserGroupInformation realUser = new UserGroupInformation(subject);
+        realUser.setLogin(login);
+        realUser.setAuthenticationMethod(authenticationMethod);
+        realUser = new UserGroupInformation(login.getSubject());
+        // If the HADOOP_PROXY_USER environment variable or property
+        // is specified, create a proxy user as the logged in user.
+        String proxyUser = System.getenv(HADOOP_PROXY_USER);
+        if (proxyUser == null) {
+          proxyUser = System.getProperty(HADOOP_PROXY_USER);
+        }
+        loginUser = proxyUser == null ? realUser : createProxyUser(proxyUser, realUser);
+    
+        String fileLocation = System.getenv(HADOOP_TOKEN_FILE_LOCATION);
+        if (fileLocation != null) {
+          // Load the token storage file and put all of the tokens into the
+          // user. Don't use the FileSystem API for reading since it has a lock
+          // cycle (HADOOP-9212).
+          Credentials cred = Credentials.readTokenStorageFile(
+              new File(fileLocation), conf);
+          loginUser.addCredentials(cred);
+        }
+        loginUser.spawnAutoRenewalThreadForUserCreds();
+      } catch (LoginException le) {
+        LOG.debug("failure to login", le);
+        throw new IOException("failure to login", le);
+      }
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("UGI loginUser:"+loginUser);
+      } 
+    }
+
+在以上代码加了中文注释的地方，将会触发HadoopLoginModule的login以及commit等方法，执行我们在文章第二部分描述的操作逻辑。
+
 [1]: resources/jaasarch.gif
 [2]: resources/jaasusage.gif
 [3]: resources/username.png
