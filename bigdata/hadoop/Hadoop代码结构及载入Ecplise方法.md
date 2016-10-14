@@ -26,7 +26,9 @@ Mapreduce、HDFS是Hadoop最主要的两个功能模块，这两个部分就分�
 
 或者，可以从github上获取：
 
-    git clone https://github.com/apache/hadoop.git
+```bash
+git clone https://github.com/apache/hadoop.git
+```
 
 ##三、Eclipse项目生成及代码修改
 
@@ -34,14 +36,18 @@ maven的Eclipse插件可以用于生成eclipse项目文件（.classpath、.proje
 
 在项目根目录下，可以执行：
 
-    mvn eclipse:eclipse
+```bash
+mvn eclipse:eclipse
+```
 
 如上所述，Hadoop有多个子项目组成，在根目录中执行该项目之后，每个子目录都会生成单独的子项目。在Eclipse中打开就会同时载入所有子项目。
 
 由于Hadoop项目比较大，一般会根据需要到某个子项目中执行Eclipse项目生成操作，比如：
 
-    [root@DX4-1 hadoop-2.7.2-src]# cd hadoop-common-project/
-    [root@DX4-1 hadoop-common-project]# mvn eclipse:eclipse
+```bash
+[root@DX4-1 hadoop-2.7.2-src]# cd hadoop-common-project/
+[root@DX4-1 hadoop-common-project]# mvn eclipse:eclipse
+```
 
 执行完成之后，可以在Eclipse中导入项目：
 
@@ -84,9 +90,11 @@ Hadoop依赖于Google的Protobuf，需要下载、编译并安装Protobuf之后�
 
 解压之后，在Protobuf项目目录执行如下命令完成安装：
 
-    ./configure
-    make
-    make install
+```bash
+./configure
+make
+make install
+```
 
 [1]: resources/sourcestr.png
 [2]: resources/eclipseimport.png

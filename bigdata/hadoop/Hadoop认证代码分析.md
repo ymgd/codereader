@@ -82,15 +82,17 @@ Hadoop认证的实现类为org.apache.hadoop.security.UserGroupInformation（[�
 ####HadoopConfiguration
 先看看UserGroupInformation的内部类HadoopConfiguration中有这样一段定义：
 
-    private static final AppConfigurationEntry[] SIMPLE_CONF = new AppConfigurationEntry[]{OS_SPECIFIC_LOGIN, HADOOP_LOGIN};
-    private static final AppConfigurationEntry OS_SPECIFIC_LOGIN =
-          new AppConfigurationEntry(OS_LOGIN_MODULE_NAME,
-                                    LoginModuleControlFlag.REQUIRED,
-                                    BASIC_JAAS_OPTIONS);
-    private static final AppConfigurationEntry HADOOP_LOGIN =
-          new AppConfigurationEntry(HadoopLoginModule.class.getName(),
-                                    LoginModuleControlFlag.REQUIRED,
-                                    BASIC_JAAS_OPTIONS);
+```java
+private static final AppConfigurationEntry[] SIMPLE_CONF = new AppConfigurationEntry[]{OS_SPECIFIC_LOGIN, HADOOP_LOGIN};
+private static final AppConfigurationEntry OS_SPECIFIC_LOGIN =
+      new AppConfigurationEntry(OS_LOGIN_MODULE_NAME,
+                                LoginModuleControlFlag.REQUIRED,
+                                BASIC_JAAS_OPTIONS);
+private static final AppConfigurationEntry HADOOP_LOGIN =
+      new AppConfigurationEntry(HadoopLoginModule.class.getName(),
+                                LoginModuleControlFlag.REQUIRED,
+                                BASIC_JAAS_OPTIONS);
+```
 
 这里定义了AppConfigurationEntry，实际就相当于前面示例中说的Example所对应的配置文件中的LoginEntry。在Hadoop中，不再使用文件方式定义LoginEntry，而是使用的代码实现的方式。
 
@@ -99,7 +101,9 @@ Hadoop认证的实现类为org.apache.hadoop.security.UserGroupInformation（[�
 ####HadoopLoginModule
 上面提到的，由LoginEntry包含的HadoopLoginModule，也是UserGroupInformation中的内部类：
 
-    public static class HadoopLoginModule implements LoginModule 
+```java
+public static class HadoopLoginModule implements LoginModule 
+```
 
 它就是JAAS中LoginModule的扩展类。
 
@@ -107,36 +111,40 @@ Hadoop认证的实现类为org.apache.hadoop.security.UserGroupInformation（[�
 
 1、 initialize
 
-    @Override
-    public void initialize(Subject subject, CallbackHandler callbackHandler,
-                           Map<String, ?> sharedState, Map<String, ?> options) {
-      this.subject = subject;
-    }
+```java
+@Override
+public void initialize(Subject subject, CallbackHandler callbackHandler,
+                       Map<String, ?> sharedState, Map<String, ?> options) {
+  this.subject = subject;
+}
+```
 
 HadoopLoginModule在这里并没有做什么，将初始化时传进来的一个Subject对象的引用赋给了成员属性subject，后面在登录过程中，对subject的修改，会影响到调用initialize者所传进来的找个subject对象（最终找个对象中的值会被使用者获取到）。
 
 2、login及logout
 
-    @Override
-    public boolean login() throws LoginException {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("hadoop login");
-      }
-      return true;
-    }
+```java
+@Override
+public boolean login() throws LoginException {
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("hadoop login");
+  }
+  return true;
+}
 
-    @Override
-    public boolean logout() throws LoginException {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("hadoop logout");
-      }
-      return true;
-    }
+@Override
+public boolean logout() throws LoginException {
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("hadoop logout");
+  }
+  return true;
+}
 
-    @Override
-    public boolean abort() throws LoginException {
-      return true;
-    }
+@Override
+public boolean abort() throws LoginException {
+  return true;
+}
+```
 
 HadoopLoginModule在login被调用时什么都没做，把事情留给后面的方法。
 logout及abort也是如此。
@@ -145,65 +153,67 @@ logout及abort也是如此。
 
 3、commit
 
-    @Override
-    public boolean commit() throws LoginException {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("hadoop login commit");
-      }
-      // subject对象中已经有了用户信息（登录过）
-      if (!subject.getPrincipals(User.class).isEmpty()) {
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("using existing subject:"+subject.getPrincipals());
-        }
-        return true;
-      }
-      Principal user = null;
-      // 如果使用Kerberos认证方式
-      if (isAuthenticationMethodEnabled(AuthenticationMethod.KERBEROS)) {
-        user = getCanonicalUser(KerberosPrincipal.class);
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("using kerberos user:"+user);
-        }
-      }
-      //如果没有用Kerberos，读取环境变量HADOOP_USER_NAME作为用户名
-      if (!isSecurityEnabled() && (user == null)) {
-        String envUser = System.getenv(HADOOP_USER_NAME);
-        if (envUser == null) {
-          envUser = System.getProperty(HADOOP_USER_NAME);
-        }
-        user = envUser == null ? null : new User(envUser);
-      }
-      //HADOOP_USER_NAME没有设置，使用当前执行出的操作系统用户名作为hadoop操作的用户名
-      if (user == null) {
-        user = getCanonicalUser(OS_PRINCIPAL_CLASS);
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("using local user:"+user);
-        }
-      }
-      //找到用户名，将其添加进subject对象当中
-      if (user != null) {
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("Using user: \"" + user + "\" with name " + user.getName());
-        }
-
-        User userEntry = null;
-        try {
-          userEntry = new User(user.getName());
-        } catch (Exception e) {
-          throw (LoginException)(new LoginException(e.toString()).initCause(e));
-        }
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("User entry: \"" + userEntry.toString() + "\"" );
-        }
-
-        subject.getPrincipals().add(userEntry);
-        return true;
-      }
-
-      //找不到定义用户名，抛异常
-      LOG.error("Can't find user in " + subject);
-      throw new LoginException("Can't find user name");
+```java
+@Override
+public boolean commit() throws LoginException {
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("hadoop login commit");
+  }
+  // subject对象中已经有了用户信息（登录过）
+  if (!subject.getPrincipals(User.class).isEmpty()) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("using existing subject:"+subject.getPrincipals());
     }
+    return true;
+  }
+  Principal user = null;
+  // 如果使用Kerberos认证方式
+  if (isAuthenticationMethodEnabled(AuthenticationMethod.KERBEROS)) {
+    user = getCanonicalUser(KerberosPrincipal.class);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("using kerberos user:"+user);
+    }
+  }
+  //如果没有用Kerberos，读取环境变量HADOOP_USER_NAME作为用户名
+  if (!isSecurityEnabled() && (user == null)) {
+    String envUser = System.getenv(HADOOP_USER_NAME);
+    if (envUser == null) {
+      envUser = System.getProperty(HADOOP_USER_NAME);
+    }
+    user = envUser == null ? null : new User(envUser);
+  }
+  //HADOOP_USER_NAME没有设置，使用当前执行出的操作系统用户名作为hadoop操作的用户名
+  if (user == null) {
+    user = getCanonicalUser(OS_PRINCIPAL_CLASS);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("using local user:"+user);
+    }
+  }
+  //找到用户名，将其添加进subject对象当中
+  if (user != null) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Using user: \"" + user + "\" with name " + user.getName());
+    }
+
+    User userEntry = null;
+    try {
+      userEntry = new User(user.getName());
+    } catch (Exception e) {
+      throw (LoginException)(new LoginException(e.toString()).initCause(e));
+    }
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("User entry: \"" + userEntry.toString() + "\"" );
+    }
+
+    subject.getPrincipals().add(userEntry);
+    return true;
+  }
+
+  //找不到定义用户名，抛异常
+  LOG.error("Can't find user in " + subject);
+  throw new LoginException("Can't find user name");
+}
+```
 
 commit方法是HadoopLoginModule的认证流程所在的主要地方，整个代码流程还是比较好理解的，逐一检测每一种可能的认证方式，一旦某种方式获取到用户名之后，将user变量设为用户名（后面的方式会由于if (user == null) 判断为false而被跳过）。最后在方法的最后，将用户信息设置到subject当中。
 
@@ -219,19 +229,21 @@ commit方法是HadoopLoginModule的认证流程所在的主要地方，整个代
 
 从一个使用场景开始：
 
-    public static FileSystem get(final URI uri, final Configuration conf,
-          final String user) throws IOException, InterruptedException {
-      String ticketCachePath =
-        conf.get(CommonConfigurationKeys.KERBEROS_TICKET_CACHE_PATH);
-      UserGroupInformation ugi =
-          UserGroupInformation.getBestUGI(ticketCachePath, user);
-      return ugi.doAs(new PrivilegedExceptionAction<FileSystem>() {
-        @Override
-        public FileSystem run() throws IOException {
-          return get(uri, conf);
-        }
-      });
+```java
+public static FileSystem get(final URI uri, final Configuration conf,
+      final String user) throws IOException, InterruptedException {
+  String ticketCachePath =
+    conf.get(CommonConfigurationKeys.KERBEROS_TICKET_CACHE_PATH);
+  UserGroupInformation ugi =
+      UserGroupInformation.getBestUGI(ticketCachePath, user);
+  return ugi.doAs(new PrivilegedExceptionAction<FileSystem>() {
+    @Override
+    public FileSystem run() throws IOException {
+      return get(uri, conf);
     }
+  });
+}
+```
 
 这是org.apache.hadoop.fs.FileSystem中的get方法，用户通过调用该方法获取FileSystem实例，然后操作hdfs文件系统。
 
@@ -241,92 +253,100 @@ commit方法是HadoopLoginModule的认证流程所在的主要地方，整个代
 
 继续看UserGroupInformation.getBestUGI实现：
 
-    public static UserGroupInformation getBestUGI(
-        String ticketCachePath, String user) throws IOException {
-      if (ticketCachePath != null) {
-        return getUGIFromTicketCache(ticketCachePath, user);
-      } else if (user == null) {
-        return getCurrentUser();
-      } else {
-        return createRemoteUser(user);
-      }    
-    }
+```java
+public static UserGroupInformation getBestUGI(
+    String ticketCachePath, String user) throws IOException {
+  if (ticketCachePath != null) {
+    return getUGIFromTicketCache(ticketCachePath, user);
+  } else if (user == null) {
+    return getCurrentUser();
+  } else {
+    return createRemoteUser(user);
+  }    
+}
+```
 
 代码中基于性能（cache）、功能完整性（支持多种认证方式）等考虑，会有多种分支处理，这里我们研究我们最主要的关注点。
 
 getBestUGI方法中，当用户未认证时，if (user == null) 条件被满足 ，调用getCurrentUser。继续看看getCurrentUser的实现：
 
-    static UserGroupInformation getCurrentUser() throws IOException {
-      AccessControlContext context = AccessController.getContext();
-      Subject subject = Subject.getSubject(context);
-      if (subject == null || subject.getPrincipals(User.class).isEmpty()) {
-        return getLoginUser();
-      } else {
-        return new UserGroupInformation(subject);
-      }
-    }
+```java
+static UserGroupInformation getCurrentUser() throws IOException {
+  AccessControlContext context = AccessController.getContext();
+  Subject subject = Subject.getSubject(context);
+  if (subject == null || subject.getPrincipals(User.class).isEmpty()) {
+    return getLoginUser();
+  } else {
+    return new UserGroupInformation(subject);
+  }
+}
+```
 
 用户未认证之前，subject为null（如前面内容描述，subject在LoginModule的commit中被设置好），调用getLoginUser。getLoginUser代码：
 
-    static UserGroupInformation getLoginUser() throws IOException {
-      if (loginUser == null) {
-        loginUserFromSubject(null);
-      }
-      return loginUser;
-    }
+```java
+static UserGroupInformation getLoginUser() throws IOException {
+  if (loginUser == null) {
+    loginUserFromSubject(null);
+  }
+  return loginUser;
+}
+```
 
 loginUser为空，继续调用loginUserFromSubject：
 
-    @InterfaceAudience.Public
-    @InterfaceStability.Evolving
-    public synchronized 
-    static void loginUserFromSubject(Subject subject) throws IOException {
-      ensureInitialized();
-      try {
-        if (subject == null) {
-          subject = new Subject();
-        }
-        // 创建LoginContext，传入的HadoopConfiguration对象会读入hadoop配置，如果配置
-        // 项hadoop.security.authentication的值为simple，会走入我们前面描述的
-        // SimpleEntry逻辑。（其他配置项时也会获取相应LogingEntry，我们这里以simple为
-        // 研究示例。
-        LoginContext login =
-            newLoginContext(authenticationMethod.getLoginAppName(), 
-                            subject, new HadoopConfiguration());
-
-        // LoginContext的login方法调用，会触发关联到的LoginModule的login、commit等
-        // 一系列方法调用
-        login.login();
-        UserGroupInformation realUser = new UserGroupInformation(subject);
-        realUser.setLogin(login);
-        realUser.setAuthenticationMethod(authenticationMethod);
-        realUser = new UserGroupInformation(login.getSubject());
-        // If the HADOOP_PROXY_USER environment variable or property
-        // is specified, create a proxy user as the logged in user.
-        String proxyUser = System.getenv(HADOOP_PROXY_USER);
-        if (proxyUser == null) {
-          proxyUser = System.getProperty(HADOOP_PROXY_USER);
-        }
-        loginUser = proxyUser == null ? realUser : createProxyUser(proxyUser, realUser);
-    
-        String fileLocation = System.getenv(HADOOP_TOKEN_FILE_LOCATION);
-        if (fileLocation != null) {
-          // Load the token storage file and put all of the tokens into the
-          // user. Don't use the FileSystem API for reading since it has a lock
-          // cycle (HADOOP-9212).
-          Credentials cred = Credentials.readTokenStorageFile(
-              new File(fileLocation), conf);
-          loginUser.addCredentials(cred);
-        }
-        loginUser.spawnAutoRenewalThreadForUserCreds();
-      } catch (LoginException le) {
-        LOG.debug("failure to login", le);
-        throw new IOException("failure to login", le);
-      }
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("UGI loginUser:"+loginUser);
-      } 
+```java
+@InterfaceAudience.Public
+@InterfaceStability.Evolving
+public synchronized 
+static void loginUserFromSubject(Subject subject) throws IOException {
+  ensureInitialized();
+  try {
+    if (subject == null) {
+      subject = new Subject();
     }
+    // 创建LoginContext，传入的HadoopConfiguration对象会读入hadoop配置，如果配置
+    // 项hadoop.security.authentication的值为simple，会走入我们前面描述的
+    // SimpleEntry逻辑。（其他配置项时也会获取相应LogingEntry，我们这里以simple为
+    // 研究示例。
+    LoginContext login =
+        newLoginContext(authenticationMethod.getLoginAppName(), 
+                        subject, new HadoopConfiguration());
+
+    // LoginContext的login方法调用，会触发关联到的LoginModule的login、commit等
+    // 一系列方法调用
+    login.login();
+    UserGroupInformation realUser = new UserGroupInformation(subject);
+    realUser.setLogin(login);
+    realUser.setAuthenticationMethod(authenticationMethod);
+    realUser = new UserGroupInformation(login.getSubject());
+    // If the HADOOP_PROXY_USER environment variable or property
+    // is specified, create a proxy user as the logged in user.
+    String proxyUser = System.getenv(HADOOP_PROXY_USER);
+    if (proxyUser == null) {
+      proxyUser = System.getProperty(HADOOP_PROXY_USER);
+    }
+    loginUser = proxyUser == null ? realUser : createProxyUser(proxyUser, realUser);
+
+    String fileLocation = System.getenv(HADOOP_TOKEN_FILE_LOCATION);
+    if (fileLocation != null) {
+      // Load the token storage file and put all of the tokens into the
+      // user. Don't use the FileSystem API for reading since it has a lock
+      // cycle (HADOOP-9212).
+      Credentials cred = Credentials.readTokenStorageFile(
+          new File(fileLocation), conf);
+      loginUser.addCredentials(cred);
+    }
+    loginUser.spawnAutoRenewalThreadForUserCreds();
+  } catch (LoginException le) {
+    LOG.debug("failure to login", le);
+    throw new IOException("failure to login", le);
+  }
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("UGI loginUser:"+loginUser);
+  } 
+}
+```
 
 在以上代码加了中文注释的地方，将会触发HadoopLoginModule的login以及commit等方法，执行我们在文章第二部分描述的操作逻辑。
 
