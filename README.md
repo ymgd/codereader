@@ -2,15 +2,22 @@
 
 <cener>![][1]</center>
 
-    System.out.println("读代码，有乐趣！"); 
+```java
+System.out.println("读代码，有乐趣！"); 
+```
 
-    <?php
-        print "读代码，有乐趣！";
-    ?>
+```php
+<?php
+    print "读代码，有乐趣！";
+?>
+```
 
-    printf("%s","读代码，有乐趣！");
+```c
+printf("%s","读代码，有乐趣！");
+```
 
-    print("读代码，有乐趣！")
-
+```python
+print("读代码，有乐趣！")
+```
 
 [1]: /pub.jpg
