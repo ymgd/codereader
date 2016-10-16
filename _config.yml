@@ -1,0 +1,36 @@
+# Site settings
+name: 源码共读 
+email: yuanmagongdu@163.com
+author: ymgd
+url: https://ymgd.github.io/codereader
+github: https://github.com/ymgd/codereader
+baseurl: ""
+description: 读源码，有意思！
+meta_description: 源码共读的博客
+motto: I am reading codes
+banner: 做时间的朋友，成为期待中的自己
+
+#permalink: /:categories/:year/:month/:day/:title/
+permalink: /:year/:month/:day/:title/
+paginate: 10
+
+exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
+
+github_username: ymgd
+highlighter: rouge
+
+# Build settings
+markdown: kramdown
+
+FB:
+  comments :
+    provider : duoshuo
+    duoshuo:
+        short_name : luoyan35714
+    disqus :
+        short_name : freudkang
+    # facebook :
+    #   appid : 123
+    #   num_posts: 5
+    #   width: 580
+    #   colorscheme: light

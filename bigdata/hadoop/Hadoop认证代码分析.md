@@ -1,4 +1,11 @@
-#Hadoop认证代码分析
+---
+layout: post
+title:  Hadoop认证代码分析
+date:   2016-10-16 02:08:00 +0800
+categories: bigdata
+---
+
+# Hadoop认证代码分析
 
 Hadoop作为分布式系统，服务分布于多台服务器之间，提供多用户的访问机制，却有着极其简单的认证实现逻辑。
 
@@ -6,20 +13,21 @@ JAAS（Java Authentication Authorization Service）完整的提供了一个认�
 
 本文主要讲述Hadoop中的认证实现方法（鉴权暂时不谈）。
 
-##一、JAAS
-###1、什么是认证鉴权
+## 一、JAAS
+
+### 1、什么是认证鉴权
 
 认证（Authentication），用于鉴别“张三即是张三”，识别用户的合法性。
 
 鉴权（Authorization），用于鉴别“张三能不能干这事情”，识别用户操作的权限。
 
-###2、JAAS架构及使用方法
+### 2、JAAS架构及使用方法
 
 > 以下关于JAAS，参考自：[http://www.cnblogs.com/allenny/archive/2006/02/27/338544.html](http://www.cnblogs.com/allenny/archive/2006/02/27/338544.html)。
 
-####JAAS的主要实现架构，如下图：
+#### JAAS的主要实现架构，如下图：
 
-<center>![][1]</center>
+![][1]
 
 图中从上到下各层次：
 
@@ -31,11 +39,11 @@ xxxLoginModule：JAAS将底层不同的实际账号认证服务进行抽象，�
 
 各类实际认证服务：包括LDAP、RDBMS等等，用户也可以自定义Service。
 
-####JAAS的主要使用方法
+#### JAAS的主要使用方法
 
 Java应用使用JAAS的方法为：
 
-<center>![][2]</center>
+![][2]
 
 整个调用就两步：
 
@@ -45,7 +53,7 @@ Java应用使用JAAS的方法为：
 
 需要留意的是，在创建LoginContext实例的时候，传入的"Example"参数，用于定位在配置文件jaas.config中所配好的Login Entry。寻找到名为Example的Login Entry所对应的配置项，获知其所使用的LoginModule为RdbmsLoginModule以及相关的配置参数（其实，就是使用mysql数据库中的信息作为认证依据）。一个LoginContext在认证过程中可以使用多个Login Entry，实现多LoginModule登录的需求。
 
-####认证的实际流程
+#### 认证的实际流程
 
 Java应用在调用LoginContext的login方法之后，JAAS实际以预定义的顺序调用LoginModule的若干方法最终完成整个认证的流程。在LoginModule的这些方法中，调用实际的认证服务，就将认证（登录）的流程与实际的认证服务关联起来了。
 
@@ -62,7 +70,7 @@ LoginModule的主要方法：
 - 成功时调用序列：initialize->login->commit
 - 失败时调用序列：initialize->login->abort
 
-####认证过程中的信息存储
+#### 认证过程中的信息存储
 
 在认证的过程当中，当用户进行认证登录之后，其信息需要存储于某个对象当中，以备之后的操作基于该对象提供的方法进行，对象自身携带的信息可以充分说明对象是经过某用户成功认证之后生成的。
 
@@ -73,13 +81,14 @@ Java中，该对象为Subject类的实例，Subject中所包含信息：
 
 Subject的中关于对象属性的这些信息，在LoginModule的commit方法中会被赋上正确的值。
 
-##二、Hadop认证主要实现类
-###1、类定义
+## 二、Hadop认证主要实现类
+
 Hadoop认证的实现类为org.apache.hadoop.security.UserGroupInformation（[代码链接](https://github.com/apache/hadoop/blob/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/UserGroupInformation.java)）。
 
 从上面对JAAS的简述很容易想象，Hadoop为了定义自己的认证机制，实际就是实现了一个自己的LoginModule，在Java应用调用LoginContext的login方法之后，触发Hadoop自定义的LoginModule中的逻辑。
 
-####HadoopConfiguration
+#### HadoopConfiguration
+
 先看看UserGroupInformation的内部类HadoopConfiguration中有这样一段定义：
 
 ```java
@@ -98,7 +107,8 @@ private static final AppConfigurationEntry HADOOP_LOGIN =
 
 在SIMPLE_CONF这个AppConfigurationEntry的数组中，包含了OS_SPECIFIC_LOGIN跟HADOOP_LOGIN两个LoginEntry，对于比如HADOOP_LOGIN这样的LoginEntry，其中定义了它所关联的LoginModule是HadoopLoginModule。（实际逻辑执行时，代码通过读取hadoop的配置项hadoop.security.authentication获取当前使用的认证方法，该配置项默认为simple，于是会映射到SIMPLE_CONF这一入口，这段逻辑我们可以自己再仔细推敲）
 
-####HadoopLoginModule
+#### HadoopLoginModule
+
 上面提到的，由LoginEntry包含的HadoopLoginModule，也是UserGroupInformation中的内部类：
 
 ```java
@@ -219,11 +229,11 @@ commit方法是HadoopLoginModule的认证流程所在的主要地方，整个代
 
 我们可以做个简单的尝试来检验我们阅读代码之后的结论，比如这个过程中，hadoop会判断HADOOP_USER_NAME是否定义，来确定当前的用户名，我们在实际的hadoop环境中做如下操作：
 
-<center>![][3]</center>
+![][3]
 
 可以看到，当把HADOOP_USER_NAME设置为用户名chinahadoop之后，再进行后续的操作，用户名都会是chinahadoop。
 
-##三、Hadoop认证机制触发流程
+## 三、Hadoop认证机制触发流程
 
 以上描述了Hadoop认证机制的基本原理。下面具体屡一下Hadoop中一个用户登录（认证）操作流程是如何的。
 
@@ -350,7 +360,7 @@ static void loginUserFromSubject(Subject subject) throws IOException {
 
 在以上代码加了中文注释的地方，将会触发HadoopLoginModule的login以及commit等方法，执行我们在文章第二部分描述的操作逻辑。
 
-[1]: resources/jaasarch.gif
-[2]: resources/jaasusage.gif
-[3]: resources/username.png
+[1]: {{ '/bigdata/hadoop/resources/jaasarch.gif' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/hadoop/resources/jaasusage.gif' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/hadoop/resources/username.png' | prepend: site.baseurl  }}
 
