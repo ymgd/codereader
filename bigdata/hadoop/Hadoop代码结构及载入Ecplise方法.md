@@ -1,9 +1,16 @@
-#Hadoop代码结构及载入Ecplise方法
+---
+layout: post
+title:  Hadoop代码结构及载入Ecplise方法
+date:   2016-10-17 11:25:00 +0800
+categories: 大数据
+---
 
-##一、项目结构
+
+## 一、项目结构
+
 在Hadoop代码结构中，按照功能的不同将项目划分到不同目录当中。
 
-<center>![][1]</center>
+![][1]
 
 整个项目可以用maven进行构建，因此根目录下有pom.xml文件。
 
@@ -20,7 +27,7 @@ Mapreduce、HDFS是Hadoop最主要的两个功能模块，这两个部分就分�
 - hadoop-client：Hadoop客户端（用于作业提交、文件上传下载等）功能实现。
 - hadoop-tool：第三方提供的一些工具，比如访问aliyun OSS的接口、访问aws的接口等等。
 
-##二、代码获取方法
+## 二、代码获取方法
 
 如果只为研究目的，不考虑特殊版本需求的话，直接从apache的Hadoop官网[https://hadoop.apache.org/releases.html](https://hadoop.apache.org/releases.html)下载一份最新的源代码。
 
@@ -30,7 +37,7 @@ Mapreduce、HDFS是Hadoop最主要的两个功能模块，这两个部分就分�
 git clone https://github.com/apache/hadoop.git
 ```
 
-##三、Eclipse项目生成及代码修改
+## 三、Eclipse项目生成及代码修改
 
 maven的Eclipse插件可以用于生成eclipse项目文件（.classpath、.project)，使得对应项目可以直接在Eclipse中打开。
 
@@ -51,24 +58,26 @@ mvn eclipse:eclipse
 
 执行完成之后，可以在Eclipse中导入项目：
 
-<center>![][2]</center>
+![][2]
 
-<center>![][3]</center>
+![][3]
 
 选择子项目所在的目录，并打开：
-<center>![][4]</center>
 
-<center>![][5]</center>
+![][4]
+
+![][5]
 
 之后，便可以像平常查看普通Java项目那样，进行查找文件、跳转到定义处等操作了：
 
-<center>![][6]</center>
+![][6]
 
-##四、编译中可能遇到的问题
+## 四、编译中可能遇到的问题
 
 Hadoop的编译过程看似只需要mvn的命令启动一下即可，但过程中会对某些工具及项目有所依赖。
 
-###1、主要依赖的工具
+### 1、主要依赖的工具
+
 - ant
 - ant-trax
 - rpmdevtools
@@ -78,9 +87,9 @@ Hadoop的编译过程看似只需要mvn的命令启动一下即可，但过程�
 - snappy-devel
 - forrest
 
-如果是连上网络的一台Linux机器，装这些并不困难，在centerOS中使用yum install，在Ubuntu中使用apt-get install。
+如果是连上网络的一台Linux机器，装这些并不困难，在CentOS中使用yum install，在Ubuntu中使用apt-get install。
 
-###2、依赖的项目
+### 2、依赖的项目
 
 Hadoop依赖于Google的Protobuf，需要下载、编译并安装Protobuf之后才能保证Hadoop的正确编译。
 
@@ -96,9 +105,9 @@ make
 make install
 ```
 
-[1]: resources/sourcestr.png
-[2]: resources/eclipseimport.png
-[3]: resources/eclipseimport2.png
-[4]: resources/eclipseimport3.png
-[5]: resources/eclipseimport4.png
-[6]: resources/sourcenavicate.png
+[1]: {{ '/bigdata/hadoop/resources/sourcestr.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/hadoop/resources/eclipseimport.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/hadoop/resources/eclipseimport2.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/hadoop/resources/eclipseimport3.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/hadoop/resources/eclipseimport4.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/hadoop/resources/sourcenavicate.png' | prepend: site.baseurl  }}

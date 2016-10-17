@@ -1,10 +1,16 @@
-#玩转Flume之核心架构深入解析
+---
+layout: post
+title:  玩转Flume之核心架构深入解析
+date:   2016-10-17 11:18:00 +0800
+categories: 大数据
+---
+
 
 我们一起来了解Source、Channel和Sink的全链路过程。
 
-##一、Flume架构分析
+## 一、Flume架构分析
 
-<center>![][1]</center>
+![][1]
 
 这个图中核心的组件是：
 
@@ -29,8 +35,10 @@ SinkGroup {
 }
 ```
 
-##二、各组件详细介绍
-###1、Source组件
+## 二、各组件详细介绍
+
+### 1、Source组件
+
 Source是数据源的总称，我们往往设定好源后，数据将源源不断的被抓取或者被推送。
 
 常见的数据源有：ExecSource，KafkaSource，HttpSource，NetcatSource，JmsSource，AvroSource等等。
@@ -59,7 +67,7 @@ public interface Source extends LifecycleAware, NamedComponent {
 
 Source提供了两种机制： PollableSource（轮询拉取）和EventDrivenSource（事件驱动）：
 
-<centre>![][2]</center>
+![][2]
 
 上图展示的Source继承关系类图。
 
@@ -69,11 +77,11 @@ Source接口继承了LifecycleAware接口，它的的所有逻辑的实现在接
 
 下图是类关系方法图：
 
-<center>![][3]</center>
+![][3]
 
 Source接口定义的是最终的实现过程，比如通过日志抓取日志，这个抓取的过程和实际操作就是在对应的Source实现中，比如：ExecSource。那么这些Source实现由谁来驱动的呢？现在我们将介绍SourceRunner类。看一下类继承结构图：
 
-<center>![][4]</center>
+![][4]
 
 我们看一下PollableSourceRunner和EventDrivenSourceRunner的具体实现：
 
@@ -114,7 +122,7 @@ public void start() {
 
 刚才我们看代码，代码中一直都在展示channelProcessor这个类，同时最上面架构设计图里面也提到了这个类，那它到底是干什么呢，下面我们就对其分解。
 
-###2、Channel组件
+### 2、Channel组件
 
 Channel用于连接Source和Sink，Source将日志信息发送到Channel，Sink从Channel消费日志信息；Channel是中转日志信息的一个临时存储，保存有Source组件传递过来的日志信息。
 
@@ -171,7 +179,7 @@ public enum ChannelSelectorType {
 
 ChannelSelector的类结构图如下所示：
 
-<center>![][5]</center>
+![][5]
 
 注：RelicatingChannelSelector和MultiplexingChannelSelector是二个通道选择器，第一个是复用型通道选择器，也就是的默认的方式，会把接收到的消息发送给其他每个channel。第二个是多路通道选择器，这个会根据消息header中的参数进行通道选择。
 
@@ -189,11 +197,12 @@ public interface Channel extends LifecycleAware, NamedComponent {
 
 类结构图如下：
 
-<center>![][6]</center>
+![][6]
 
-<center>![][7]</center>
+![][7]
 
-###3、Sink组件
+### 3、Sink组件
+
 Sink负责取出Channel中的消息数据，进行相应的存储文件系统，数据库，或者提交到远程服务器。
 
 Sink在设置存储数据时，可以向文件系统中，数据库中，hadoop中储数据，在日志数据较少时，可以将数据存储在文件系中，并且设定一定的时间间隔保存数据。在日志数据较多时，可以将相应的日志数据存储到Hadoop中，便于日后进行相应的数据分析。
@@ -241,7 +250,7 @@ public Sink create(String name, String type) throws FlumeException {
 
 Sink的类结构图如下：
 
-<center>![][8]</center>
+![][8]
 
 与ChannelProcessor处理类对应的是SinkProcessor，由SinkProcessorFactory工厂类负责创建，SinkProcessor的类型由一个枚举类提供，看下面代码：
 
@@ -287,11 +296,11 @@ public enum SinkProcessorType {
 
 SinkProcessor的类结构图如下：
 
-<center>![][9]</center>
+![][9]
 
 说明：
 
-###1、FailoverSinkProcessor是故障转移处理器，当sink从通道拿数据信息时出错进行的相关处理，代码如下：
+### 1、FailoverSinkProcessor是故障转移处理器，当sink从通道拿数据信息时出错进行的相关处理，代码如下：
 
 ```java
 public Status process() throws EventDeliveryException {
@@ -336,7 +345,8 @@ public Status process() throws EventDeliveryException {
   }
 ```
 
-###2、LoadBalancingSinkProcessor是负载Sink处理器
+### 2、LoadBalancingSinkProcessor是负载Sink处理器
+
 首先我们和ChannelProcessor一样，我们也要重点说明一下SinkSelector这个选择器。
 
 先看一下SinkSelector.configure方法的部分代码：
@@ -362,7 +372,7 @@ if (selectorTypeName.equalsIgnoreCase(SELECTOR_NAME_ROUND_ROBIN)) {
 
 结合上面的代码，再看类结构图如下：
 
-<center>![][10]</center>
+![][10]
 
 注：RoundRobinSinkSelector是轮询选择器，RandomOrderSinkSelector是随机分配选择器。
 
@@ -451,15 +461,15 @@ public Status process() throws EventDeliveryException {
 
 注：方法从channel中不断的获取数据，然后通过Kafka的producer生产者将消息发送到Kafka里面。
 
-[1]: resources/arch.jpg
-[2]: resources/sourcepull.jpg
-[3]: resources/classrel.jpg
-[4]: resources/sourceclass.png
-[5]: resources/channelselector.png
-[6]: resources/abstractchannel.png
-[7]: resources/abstractchannel2.png
-[8]: resources/sinkclass.png
-[9]: resources/sinkprocessor.png
-[10]: resources/sinkselector.png
+[1]: {{ '/bigdata/flume/resources/arch.jpg' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/flume/resources/sourcepull.jpg' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/flume/resources/classrel.jpg' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/flume/resources/sourceclass.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/flume/resources/channelselector.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/flume/resources/abstractchannel.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/flume/resources/abstractchannel2.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/flume/resources/sinkclass.png' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/flume/resources/sinkprocessor.png' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/flume/resources/sinkselector.png' | prepend: site.baseurl  }}
 
 

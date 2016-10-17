@@ -2,10 +2,9 @@
 layout: post
 title:  Hadoop认证代码分析
 date:   2016-10-16 02:08:00 +0800
-categories: bigdata
+categories: 大数据
 ---
 
-# Hadoop认证代码分析
 
 Hadoop作为分布式系统，服务分布于多台服务器之间，提供多用户的访问机制，却有着极其简单的认证实现逻辑。
 

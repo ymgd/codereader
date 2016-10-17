@@ -1,4 +1,10 @@
-#Flume-NG源码分析-整体结构及配置载入分析
+---
+layout: post
+title:  Flume-NG源码分析-整体结构及配置载入分析
+date:   2016-10-17 11:11:00 +0800
+categories: 大数据
+---
+
 
 > 弦外之音
 > 
@@ -7,9 +13,9 @@
 
 在 http://flume.apache.org 上下载flume-1.6.0版本，将源码导入到Idea开发工具后如下图所示：
 
-<center>![][1]</center>
+![][1]
 
-##一、主要模块说明
+## 一、主要模块说明
 
 - flume-ng-channels
 里面包含了filechannel，jdbcchannel，kafkachannel,memorychannel通道的实现。
@@ -30,11 +36,11 @@ flume整个核心框架，包括了各个模块的接口以及逻辑关系实现
 - flume-ng-node
 实现启动flume的一些基本类，包括main函数的入口（Application.java中）。在理解configuration之后，从application的main函数入手，可以较快的了解整个flume的代码。
 
-##二、Flume逻辑结构图
+## 二、Flume逻辑结构图
 
-<center>![][2]</center>
+![][2]
 
-##三、flume-ng启动文件介绍
+## 三、flume-ng启动文件介绍
 
 ```bash
 ################################
@@ -103,7 +109,8 @@ fi
 
 这是其中最主要的一部分flume-ng命令行，根据重要性摘取了一段，感兴趣的读者可以自己到bin目录下查看全部。
 
-##四、从Flume-NG启动过程开始说起
+## 四、从Flume-NG启动过程开始说起
+
 从bin/flume-ng这个shell脚本可以看到Flume的起始于org.apache.flume.node.Application类，这是flume的main函数所在。
 
 main方法首先会先解析shell命令，如果指定的配置文件不存在就抛出异常。
@@ -222,9 +229,9 @@ application.start();
 
 类图如下：
 
-<center>![][3]</center>
+![][3]
 
-<center>![][4]</center>
+![][4]
 
 从图中可以看出在整个PollingPropertiesFileConfigurationProvider类中，它实现了LifecycleAware接口，而这个接口是掌管整个Flume生命周期的一个核心接口，LifecycleSupervisor实现了这个接口，通过上面代码中application.start方法触发LifecyleAware的start方法，下面是这个接口的方法定义及相关类代码：
 
@@ -325,7 +332,7 @@ if (!lifecycleAware.getLifecycleState().equals( supervisoree.status.desiredState
 
 时序调用图如下所示
 
-<center>![][5]</center>
+![][5]
 
 注：
 
@@ -337,7 +344,8 @@ eventBus.post(getConfiguration())。
 
 getConfiguration()解析了配置文件并且获取所有组件及配置属性
 
-##五、配置文件加载详细分析
+## 五、配置文件加载详细分析
+
 先看一下FileWatcherRunnable内部的代码：
 
 ```java
@@ -402,7 +410,7 @@ public MaterializedConfiguration getConfiguration() {
 
 getFlumeConfiguration()这个方法是一个抽象方法，可以通过下图的方式查找加载方式。
 
-<center>![][6]</center>
+![][6]
 
 我们选择PollingPropertiesFileConfigurationProvider这个，可以看到：
 
@@ -432,7 +440,7 @@ public FlumeConfiguration getFlumeConfiguration() {
 }
 ```
 
-<center>![][7]</center>
+![][7]
 
 就是上面这个方法通过JAVA最基本的流的方式加载的配置文件，也就是图上面我配置的flume的hw.conf配置文件。方法读取配置文件，然后解析成name（输姓名全称，即等号左侧的全部）、value（等号的右侧）对，存入一个Map当中，返回一个封装了这个Map的FlumeConfiguration对象。
 
@@ -537,17 +545,18 @@ private BasicConfigurationConstants() {
 
 6、将sources、channel、sink配置信息，分别存放到sourceContextMap、channelConfigMap、sinkConfigMap三个HashMap，最后统一封装到AgentConfiguration对象中，然后再把AgentConfiguration存放到agentConfigMap中，key是agentName。说了这么多相信很多同学都已经晕了，agentConfigMap的结构如下图所示：
 
-<center>![][8]</center>
+![][8]
 
 
 > 读源码是一个很痛苦的过程，不仅要分析整体框架的架构，还要理解作者的用意和设计思想，但只要坚持下来你会发现还是能学到很多东西的。
 
-[1]: resources/sourcestruc.png
-[2]: resources/logicstruc.png
-[3]: resources/configurationprovider.png
-[4]: resources/configurationprovider2.png
-[5]: resources/timeline.png
-[6]: resources/flumeconfiguration.png
-[7]: resources/configfile.png
-[8]: resources/agentconfigmap.png
+[1]: {{ '/bigdata/flume/resources/sourcestruc.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/flume/resources/logicstruc.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/flume/resources/configurationprovider.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/flume/resources/configurationprovider2.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/flume/resources/timeline.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/flume/resources/flumeconfiguration.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/flume/resources/configfile.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/flume/resources/agentconfigmap.png' | prepend: site.baseurl  }}
+
 
