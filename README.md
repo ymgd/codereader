@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  源码共读项目说明
+title:  源码分析项目说明
 date:   2016-10-13 02:08:00 +0800
-categories: 源码共读
+categories: 源码分析
 rank: 0
 ---
 
