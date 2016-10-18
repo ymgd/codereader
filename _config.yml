@@ -1,12 +1,12 @@
 # Site settings
-name: 源码共读 
+name: 源码分析
 email: yuanmagongdu@163.com
 author: ymgd
 url: https://ymgd.github.io/codereader
 github: https://github.com/ymgd/codereader
 baseurl: ""
 description: ""
-meta_description: 源码共读的博客
+meta_description: 源码分析的博客
 motto: I am reading codes
 banner: 做时间的朋友，成为期待中的自己
 
