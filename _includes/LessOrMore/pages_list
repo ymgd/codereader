@@ -1,4 +1,5 @@
-{% for node in pages_list %}
+{% assign sorted = pages_list | sort:"rank" %}
+{% for node in sorted %}
   {% if node.title != null %}
     {% if group == null or group == node.group %}
     	{% if page.url == node.url %}

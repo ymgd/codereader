@@ -2,7 +2,8 @@
 layout: post
 title:  Flume-NG源码分析-整体结构及配置载入分析
 date:   2016-10-17 11:11:00 +0800
-categories: 大数据
+categories: Flume
+rank: 10
 ---
 
 

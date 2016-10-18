@@ -1,4 +1,11 @@
-#Hadoop
+---
+layout: post
+title:  Hadoop项目说明
+date:   2016-10-13 02:08:00 +0800
+categories: Hadoop
+rank: 0
+---
+
 
 项目地址：[http://hadoop.apache.org/](http://hadoop.apache.org/)
 

@@ -2,7 +2,8 @@
 layout: post
 title:  Hadoop认证代码分析
 date:   2016-10-16 02:08:00 +0800
-categories: 大数据
+categories: Hadoop
+rank: 10
 ---
 
 

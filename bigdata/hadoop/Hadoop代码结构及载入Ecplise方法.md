@@ -2,7 +2,8 @@
 layout: post
 title:  Hadoop代码结构及载入Ecplise方法
 date:   2016-10-17 11:25:00 +0800
-categories: 大数据
+categories: Hadoop
+rank: 10
 ---
 
 
