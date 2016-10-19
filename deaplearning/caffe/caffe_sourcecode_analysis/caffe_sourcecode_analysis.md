@@ -106,9 +106,9 @@ message NetParameter {
 Caffe.proto每个message在编译后都会自动生成一些函数，大概是这样一个命名规范：Set_+field 设定值的函数命名,has_ 检查field是否已经被设置, clear_用于清理field,mutable_用于设置string的值,_size用于获取 重复的个数。
 
 大概有这么些Message类别：
-**属于blob的**：`BlobProto`, `BlobProtoVector`, `Datum`。
+**属于blob的**：`BlobProto`, `BlobProtoVector`, `Datum`。<br>
 **属于layer的**：`FillerParameter`, `LayerParameter`, `ArgMaxParameter`, `TransformationParameter`, `LossParameter`, `AccuracyParameter`, `ConcatParameter`, `ContrastiveLossParameter`, `ConvolutionParameter`, `DataParameter`, `DropoutParameter`, `DummyDataParameter`, `EltwiseParameter`, `ExpParameter`, `HDF5DataParameter`, `HDF5OutputParameter`, `HingeLossParameter`, `ImageDataParameter`, `InfogainLossParameter`, `InnerProductParameter`,
-`LRNParameter`, `MemoryDataParameter`, `MVNParameter`, `PoolingParameter`, `PowerParameter`, `PythonParameter`, `ReLUParameter`, `SigmoidParameter`, `SliceParameter`, `SoftmaxParameter`, `TanHParameter`, `ThresholdParameter`等。
+`LRNParameter`, `MemoryDataParameter`, `MVNParameter`, `PoolingParameter`, `PowerParameter`, `PythonParameter`, `ReLUParameter`, `SigmoidParameter`, `SliceParameter`, `SoftmaxParameter`, `TanHParameter`, `ThresholdParameter`等。<br>
 **属于net的**：`NetParameter`, `SolverParameter`, `SolverState`, `NetState`, `NetStateRule`, `ParamSpec`。
 
 ### 2.3.2 **Blob**
@@ -132,9 +132,9 @@ class Blob {
 ```
 其中`template <typename Dtype>`表示函数模板，Dtype可以表示int,double等数据类型。Blob是四维连续数组(4-D contiguous array, type = float32), 如果使用(n, k, h, w)表示的话，那么每一维的意思分别是：
 
-* n: number. 输入数据量，比如进行sgd时候的mini-batch大小。
-* c: channel. 如果是图像数据的话可以认为是通道数量。
-* h,w: height, width. 如果是图像数据的话可以认为是图片的高度和宽度。
+* n: number. 输入数据量，比如进行sgd时候的mini-batch大小。<br>
+* c: channel. 如果是图像数据的话可以认为是通道数量。<br>
+* h,w: height, width. 如果是图像数据的话可以认为是图片的高度和宽度。<br>
 
 实际Blob在(n, k, h, w)位置的值物理位置为((n * K + k) * H + h) * W + w。
 
@@ -149,14 +149,14 @@ Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而d
 
 关于Blob里定义的函数的简单说明如下：
 
-* `Reshape()`可以改变一个blob的大小;
-* `ReshapeLike()`为data和diff重新分配一块空间,大小和另一个blob的一样;
-* `Num_axes()`返回的是blob的大小;
-* `Count()`计算得到count=num*channels*height*width。
-* `Offset()`可得到输入blob数据(n,c,h,w)的偏移量位置;
-* `CopyFrom()`从source拷贝数据,copy_diff来作为标志区分是拷贝data还是 diff。
-* `FromProto()`从proto读数据进来,其实就是反序列化。 
-* `ToProto()`把blob数据保存到proto中。 ShareDate()/ShareDiff()从other的blob复制data和diff的值;
+* `Reshape()`可以改变一个blob的大小;<br>
+* `ReshapeLike()`为data和diff重新分配一块空间,大小和另一个blob的一样;<br>
+* `Num_axes()`返回的是blob的大小;<br>
+* `Count()`计算得到count=num*channels*height*width。<br>
+* `Offset()`可得到输入blob数据(n,c,h,w)的偏移量位置;<br>
+* `CopyFrom()`从source拷贝数据,copy_diff来作为标志区分是拷贝data还是 diff。<br>
+* `FromProto()`从proto读数据进来,其实就是反序列化。 <br>
+* `ToProto()`把blob数据保存到proto中。 ShareDate()/ShareDiff()从other的blob复制data和diff的值;<br>
 
 #### 2.3.3 **Layer**
 Layer是网络的基本单元("积木"),由此派生出了各种层类。如果做数据特征表达相关的研究，需要修改这部分。Layer类派生出来的层类通过这 实现两个虚函数`Forward()`和`Backward()`,产生了各种功能的 层类。Forward是从根据bottom计算top的过程,Backward则刚好相反。
