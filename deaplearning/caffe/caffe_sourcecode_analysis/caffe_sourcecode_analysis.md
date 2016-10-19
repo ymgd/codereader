@@ -34,14 +34,14 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 ### 2.2 代码阅读顺序建议
 在对整体的结构有一个大致的印象以后，就可以开始阅读源码了，一个参考的阅读顺序大概是：
 
-**Step 1**.[caffe.proto](https://github.com/BVLC/caffe/blob/master/src/caffe/proto/caffe.proto)：对应目录 caffe-master\src\caffe\proto\caffe.proto 
+**Step 1**. [caffe.proto](https://github.com/BVLC/caffe/blob/master/src/caffe/proto/caffe.proto)：对应目录 caffe-master\src\caffe\proto\caffe.proto 
 
-**Step 2**.[Hpp文件](https://github.com/BVLC/caffe/tree/master/include/caffe):包括
+**Step 2**. [Hpp文件](https://github.com/BVLC/caffe/tree/master/include/caffe):包括
 
-* a [solver.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/solver.hpp) --- caffe-master\include\caffe\net.hpp
-* b [net.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/net.hpp) --- caffe-master\include\caffe\net.hpp 
-* c [layer.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/layer.hpp) --- caffe-master\include\caffe\layer.hpp
-* d [blob.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/blob.hpp) --- caffe-master\include\caffe\blob.hpp
+* a  [solver.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/solver.hpp) --- caffe-master\include\caffe\net.hpp
+* b  [net.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/net.hpp) --- caffe-master\include\caffe\net.hpp 
+* c  [layer.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/layer.hpp) --- caffe-master\include\caffe\layer.hpp
+* d  [blob.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/blob.hpp) --- caffe-master\include\caffe\blob.hpp
 
 上面d,c,b,a这4个部分实际上是自底向上的结构。
 
@@ -105,7 +105,7 @@ message NetParameter {
 
 Caffe.proto每个message在编译后都会自动生成一些函数，大概是这样一个命名规范：Set_+field 设定值的函数命名,has_ 检查field是否已经被设置, clear_用于清理field,mutable_用于设置string的值,_size用于获取 重复的个数。
 
-大概有这么些Message类别：
+大概有这么些Message类别：<br>
 **属于blob的**：`BlobProto`, `BlobProtoVector`, `Datum`。<br>
 **属于layer的**：`FillerParameter`, `LayerParameter`, `ArgMaxParameter`, `TransformationParameter`, `LossParameter`, `AccuracyParameter`, `ConcatParameter`, `ContrastiveLossParameter`, `ConvolutionParameter`, `DataParameter`, `DropoutParameter`, `DummyDataParameter`, `EltwiseParameter`, `ExpParameter`, `HDF5DataParameter`, `HDF5OutputParameter`, `HingeLossParameter`, `ImageDataParameter`, `InfogainLossParameter`, `InnerProductParameter`,
 `LRNParameter`, `MemoryDataParameter`, `MVNParameter`, `PoolingParameter`, `PowerParameter`, `PythonParameter`, `ReLUParameter`, `SigmoidParameter`, `SliceParameter`, `SoftmaxParameter`, `TanHParameter`, `ThresholdParameter`等。<br>
@@ -205,12 +205,12 @@ class Layer {
   virtual ~Layer() {}
 ...
 ```
-Layer中三个重要参数:
+Layer中三个重要参数:<br>
 `LayerParameter layer_param_;`这个是protobuf文件中存储的layer参数。<br>
 `vector<share_ptr<Blob<Dtype>>> blobs_;`这个存储的是layer学习到的参数。<br>
 `vector<bool> param_propagate_down_;`这个bool表示是否计算各个 blob参数的diff,即传播误差。<br>
 
-包含了一些基本函数：
+包含了一些基本函数：<br>
 `Layer()`尝试从protobuf读取参数; `SetUp()`根据实际的参数设置进行实现,对各种类型的参数初始化;<br>
 `Forward()`和Backward()对应前向计算和反向更新,输入统一都是 bottom,输出为top,其中Backward里面有个propagate_down参数, 用来表示该Layer是否反向传播参数。<br>
 `Caffe::mode()`具体选择使用CPU或GPU操作。<br>
@@ -302,7 +302,7 @@ result = test_net_->Forward(bottom_vec, &iter_loss);
     3.3.是否要输出Test loss,是否要输出test_score;     
     3.4.设置当前阶段(TRAIN还是TEST)
 ```
-基本函数的一个简易介绍如下：
+基本函数的一个简易介绍如下：<br>
 `Snapshot()`输出当前网络状态到一个文件中; <br>
 `Restore()`从一个文件中读入网络状态,并可以从那个状态恢复; <br>
 `GetLearningRate()`得到学习率; PreSolve()提前训练,详见网页链接; <br>
