@@ -26,10 +26,10 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 
 在很多地方都可以看到介绍说caffe种贯穿始终的是Blob，Layer，Net，Solver这几个大类。这四个大类分别负责数据传输、网络层次、网络骨架与参数求解策略，呈现一个自下而上，环环相扣的状态。在源码中可以找到对应这些名称的实现，详细说来，这4个部分分别负责：
 
-* **Blob**：是数据传输的媒介，神经网络涉及到的输入输出数据，网络权重参数等等，其实都是转化为Blob数据结构来存储的。
-* **Layer**：是神经网络的基础单元，层与层间的数据节点、前后传递都在该数据结构中被实现，因神经网络网络中设计到多种层，这里layers下实现了卷积层、激励层，池化层，全连接层等等“积木元件”，丰富度很高。
-**Net**：是网络的整体搭建骨架，整合Layer中的层级机构组成网络。
-**Solver**：是网络的求解优化策略，让你用各种“积木”搭建的网络能最适应当前的场景下的样本，如果做深度学习优化研究的话，可能会修改这个模块。
+* **Blob**：是数据传输的媒介，神经网络涉及到的输入输出数据，网络权重参数等等，其实都是转化为Blob数据结构来存储的。<br>
+* **Layer**：是神经网络的基础单元，层与层间的数据节点、前后传递都在该数据结构中被实现，因神经网络网络中设计到多种层，这里layers下实现了卷积层、激励层，池化层，全连接层等等“积木元件”，丰富度很高。<br>
+* **Net**：是网络的整体搭建骨架，整合Layer中的层级机构组成网络。<br>
+* **Solver**：是网络的求解优化策略，让你用各种“积木”搭建的网络能最适应当前的场景下的样本，如果做深度学习优化研究的话，可能会修改这个模块。<br>
 
 ### 2.2 代码阅读顺序建议
 在对整体的结构有一个大致的印象以后，就可以开始阅读源码了，一个参考的阅读顺序大概是：
@@ -38,10 +38,10 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 
 **Step 2**.[Hpp文件](https://github.com/BVLC/caffe/tree/master/include/caffe):包括
 
-* a.[solver.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/solver.hpp) --- caffe-master\include\caffe\net.hpp
-* b.[net.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/net.hpp) --- caffe-master\include\caffe\net.hpp 
-* c.[layer.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/layer.hpp) --- caffe-master\include\caffe\layer.hpp
-* d.[blob.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/blob.hpp) --- caffe-master\include\caffe\blob.hpp
+* a [solver.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/solver.hpp) --- caffe-master\include\caffe\net.hpp
+* b [net.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/net.hpp) --- caffe-master\include\caffe\net.hpp 
+* c [layer.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/layer.hpp) --- caffe-master\include\caffe\layer.hpp
+* d [blob.hpp](https://github.com/BVLC/caffe/blob/master/include/caffe/blob.hpp) --- caffe-master\include\caffe\blob.hpp
 
 上面d,c,b,a这4个部分实际上是自底向上的结构。
 
@@ -141,11 +141,11 @@ class Blob {
 Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而diff则存储BP的梯度。
 
 关于blob引入的头文件可以参考下面说明做理解：
-\#include “caffe/common.hpp”单例化caffe类,并且封装了boost和cuda随
-机数生成的函数,提供了统一接口。
-\#include "caffe/proto/caffe.pb.h"上一节提到的头文件
-\#include “caffe/syncedmem.hpp”主要是分配内存和释放内存的。而class SyncedMemory定义了内存分配管理和CPU与GPU之间同步的函数。Blob会使用SyncedMem自动决定什么时候去copy data以提高运行效率,通常情况是仅当gnu或cpu修改后有copy操作。
-\#include “caffe/util/math_functions.hpp”封装了很多cblas矩阵运算,基本是矩阵和向量的处理函数。
+\#include “caffe/common.hpp”单例化caffe类,并且封装了boost和cuda随<br>
+机数生成的函数,提供了统一接口。<br>
+\#include "caffe/proto/caffe.pb.h"上一节提到的头文件<br>
+\#include “caffe/syncedmem.hpp”主要是分配内存和释放内存的。而class SyncedMemory定义了内存分配管理和CPU与GPU之间同步的函数。Blob会使用SyncedMem自动决定什么时候去copy data以提高运行效率,通常情况是仅当gnu或cpu修改后有copy操作。<br>
+\#include “caffe/util/math_functions.hpp”封装了很多cblas矩阵运算,基本是矩阵和向量的处理函数。<br>
 
 关于Blob里定义的函数的简单说明如下：
 
@@ -206,14 +206,14 @@ class Layer {
 ...
 ```
 Layer中三个重要参数:
-`LayerParameter layer_param_;`这个是protobuf文件中存储的layer参数。
-`vector<share_ptr<Blob<Dtype>>> blobs_;`这个存储的是layer学习到的参数。
-`vector<bool> param_propagate_down_;`这个bool表示是否计算各个 blob参数的diff,即传播误差。
+`LayerParameter layer_param_;`这个是protobuf文件中存储的layer参数。<br>
+`vector<share_ptr<Blob<Dtype>>> blobs_;`这个存储的是layer学习到的参数。<br>
+`vector<bool> param_propagate_down_;`这个bool表示是否计算各个 blob参数的diff,即传播误差。<br>
 
 包含了一些基本函数：
-`Layer()`尝试从protobuf读取参数; `SetUp()`根据实际的参数设置进行实现,对各种类型的参数初始化;
-`Forward()`和Backward()对应前向计算和反向更新,输入统一都是 bottom,输出为top,其中Backward里面有个propagate_down参数, 用来表示该Layer是否反向传播参数。
-`Caffe::mode()`具体选择使用CPU或GPU操作。
+`Layer()`尝试从protobuf读取参数; `SetUp()`根据实际的参数设置进行实现,对各种类型的参数初始化;<br>
+`Forward()`和Backward()对应前向计算和反向更新,输入统一都是 bottom,输出为top,其中Backward里面有个propagate_down参数, 用来表示该Layer是否反向传播参数。<br>
+`Caffe::mode()`具体选择使用CPU或GPU操作。<br>
 
 #### 2.3.4 **Net**
 Net是网络的搭建部分，将Layer所派生出层类组合成网络。
@@ -226,24 +226,24 @@ Net由一系列的Layer组成(无回路有向图DAG)，Layer之间的连接由�
 
 里面比较重要的函数的简单说明如下：
 
-`Init()`初始化函数,用于创建blobs和layers,用于调用layers的setup函数来初始化layers。 
-`ForwardPrefilled()`用于前馈预先填满,即预先进行一次前馈。
-`Forward()`把网络输入层的blob读到net_input_blobs_,然后进行前馈,计 算出loss。Forward的重载,只是输入层的blob以string的格式传入。
-`Backward()`对整个网络进行反向传播。 
-`Reshape()`用于改变每层的尺寸。 Update()更新params_中blob的值。 
-`ShareTrainedLayersWith(Net* other)`从Other网络复制某些层。
-`CopyTrainedLayersFrom()`调用FromProto函数把源层的blob赋给目标 层的blob。
-`ToProto()`把网络的参数存入prototxt中。 
-bottom_vecs_存每一层的输入blob指针 
-bottom_id_vecs_存每一层输入(bottom)的id 
-top_vecs_存每一层输出(top)的blob 
-`params_lr()`和`params_weight_decay()`学习速率和权重衰减; 
-`blob_by_name()`判断是否存在名字为blob_name的blob;
-`FilterNet()`给定当前phase/level/stage,移除指定层。 
-`StateMeetsRule()`中net的state是否满足NetStaterule。 
-`AppendTop()`在网络中附加新的输入或top的blob。 
-`AppendBottom()`在网络中附加新的输入或bottom的blob。 
-`AppendParam()`在网络中附加新的参数blob。
+`Init()`初始化函数,用于创建blobs和layers,用于调用layers的setup函数来初始化layers。 <br>
+`ForwardPrefilled()`用于前馈预先填满,即预先进行一次前馈。<br>
+`Forward()`把网络输入层的blob读到net_input_blobs_,然后进行前馈,计 算出loss。Forward的重载,只是输入层的blob以string的格式传入。<br>
+`Backward()`对整个网络进行反向传播。 <br>
+`Reshape()`用于改变每层的尺寸。 Update()更新params_中blob的值。 <br>
+`ShareTrainedLayersWith(Net* other)`从Other网络复制某些层。<br>
+`CopyTrainedLayersFrom()`调用FromProto函数把源层的blob赋给目标 层的blob。<br>
+`ToProto()`把网络的参数存入prototxt中。 <br>
+bottom_vecs_存每一层的输入blob指针 <br>
+bottom_id_vecs_存每一层输入(bottom)的id <br>
+top_vecs_存每一层输出(top)的blob <br>
+`params_lr()`和`params_weight_decay()`学习速率和权重衰减; <br>
+`blob_by_name()`判断是否存在名字为blob_name的blob;<br>
+`FilterNet()`给定当前phase/level/stage,移除指定层。 <br>
+`StateMeetsRule()`中net的state是否满足NetStaterule。 <br>
+`AppendTop()`在网络中附加新的输入或top的blob。 <br>
+`AppendBottom()`在网络中附加新的输入或bottom的blob。 <br>
+`AppendParam()`在网络中附加新的参数blob。<br>
 `GetLearningRateAndWeightDecay()`收集学习速率和权重衰减，即更 新params_、params_lr_和params_weight_decay_ ;
 
 更多细节可以参考[这篇博客](http://blog.csdn.net/qq_16055159/article/details/45057297)
@@ -303,9 +303,9 @@ result = test_net_->Forward(bottom_vec, &iter_loss);
     3.4.设置当前阶段(TRAIN还是TEST)
 ```
 基本函数的一个简易介绍如下：
-`Snapshot()`输出当前网络状态到一个文件中; 
-`Restore()`从一个文件中读入网络状态,并可以从那个状态恢复; 
-`GetLearningRate()`得到学习率; PreSolve()提前训练,详见网页链接; 
+`Snapshot()`输出当前网络状态到一个文件中; <br>
+`Restore()`从一个文件中读入网络状态,并可以从那个状态恢复; <br>
+`GetLearningRate()`得到学习率; PreSolve()提前训练,详见网页链接; <br>
 `ComputeUpdateValue()`用随机梯度下降法计算更新值;
 
 未完待续...
