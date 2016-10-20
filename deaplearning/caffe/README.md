@@ -3,6 +3,7 @@ layout: post
 title:  Caffe
 date:   2016-10-20 11:11:00 +0800
 categories: Caffe
+tag: C++
 rank: 0
 ---
 
