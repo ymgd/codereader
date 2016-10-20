@@ -1,1 +1,1 @@
-../deaplearning/caffe/README.md
+../deeplearning/caffe/README.md
