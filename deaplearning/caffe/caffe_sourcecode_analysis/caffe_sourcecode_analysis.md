@@ -1,10 +1,18 @@
-# Caffe源码导读
+---
+layout: post
+title:  Caffe源码导读
+date:   2016-10-20 11:11:00 +0800
+categories: Caffe
+rank: 10
+author: hanxiaoyang
+---
 
 
 by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 部分内容整理自互联网，感谢众多同学的分享。
 
 ## 1.前言
+
 目前的图像和自然语言处理很多地方用到了神经网络/深度学习相关的知识，神奇的效果让广大身处IT一线的程序猿GG们跃跃欲试，不过看到深度学习相关一大串公式之后头皮发麻，又大有放弃的想法。
 
 从工业使用的角度来说，不打算做最前沿的研究，只是用已有的方法或者成型的框架来完成一些任务，也不用一上来就死啃理论，倒不如先把神经网络看得简单一点，视作一个搭积木的过程，所谓的卷积神经网络(CNN)或者循环神经网络(RNN)等无非是积木块不一样(层次和功能不同)以及搭建的方式不一样，再者会有一套完整的理论帮助我们把搭建的积木模型最好地和需要完成的任务匹配上。
@@ -16,6 +24,7 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 ## 2.Caffe代码结构
 
 ### 2.1 总体概述
+
 典型的神经网络是层次结构，每一层会完成不同的运算(可以简单理解为有不同的功能)，运算的层叠完成前向传播运算，“比对标准答案”之后得到“差距(loss)”，还需要通过反向传播来求得修正“积木块结构(参数)”所需的组件，继而完成参数调整。
 
 所以[caffe](http://caffe.berkeleyvision.org/)也定义了环环相扣的类，来更好地完成上述的过程。我们看到这里一定涉及**数据**，**网络层**，**网络结构**，**最优化网络**几个部分，在caffe中同样是这样一个想法，[caffe的源码目录结构](https://github.com/BVLC/caffe/tree/master/src/caffe)如下。
@@ -32,6 +41,7 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 * **Solver**：是网络的求解优化策略，让你用各种“积木”搭建的网络能最适应当前的场景下的样本，如果做深度学习优化研究的话，可能会修改这个模块。<br>
 
 ### 2.2 代码阅读顺序建议
+
 在对整体的结构有一个大致的印象以后，就可以开始阅读源码了，一个参考的阅读顺序大概是：
 
 **Step 1**. [caffe.proto](https://github.com/BVLC/caffe/blob/master/src/caffe/proto/caffe.proto)：对应目录 caffe-master\src\caffe\proto\caffe.proto 
@@ -52,6 +62,7 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 ### 2.3 代码细节
 
 #### 2.3.1 **caffe.proto**
+
 caffe.proto是建议第一个阅读的部分，它位于…\src\caffe\proto目录下。首先要说明的是Google Protocol Buffer(简称 Protobuf) 是Google 公司内部的混合语言数据标准，是一种轻便高效的结构化数据存储格式，可以用于结构化数据串行化，或者说序列化。用来做数据存储或 RPC 数据交换格式。caffe.proto运行后会生成caffe.pb.cc和caffe.pb.h两个文件，包含了很多结构化数据。
 
 caffe.proto的一个message定义了一个需要传输的参数结构体，Package caffe可以把caffe.proto里面的所有文件打包存在caffe类里面。大致的代码框架如下：
@@ -112,8 +123,10 @@ Caffe.proto每个message在编译后都会自动生成一些函数，大概是�
 **属于net的**：`NetParameter`, `SolverParameter`, `SolverState`, `NetState`, `NetStateRule`, `ParamSpec`。
 
 ### 2.3.2 **Blob**
+
 前面说到了Blob是最基础的数据结构,用来保存网络传输 过程中产生的数据和学习到的一些参数。比如它的上一层Layer中会用下面的形式表示学习到的参数:`vector<shared_ptr<Blob<Dtype> > > blobs_;`里面的blob就是这里定义的类。
 部分代码如下：
+
 ```C
 template <typename Dtype>
 class Blob {
@@ -130,6 +143,7 @@ class Blob {
       const int width);
 ...
 ```
+
 其中`template <typename Dtype>`表示函数模板，Dtype可以表示int,double等数据类型。Blob是四维连续数组(4-D contiguous array, type = float32), 如果使用(n, k, h, w)表示的话，那么每一维的意思分别是：
 
 * n: number. 输入数据量，比如进行sgd时候的mini-batch大小。<br>
@@ -159,10 +173,12 @@ Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而d
 * `ToProto()`把blob数据保存到proto中。 ShareDate()/ShareDiff()从other的blob复制data和diff的值;<br>
 
 #### 2.3.3 **Layer**
+
 Layer是网络的基本单元("积木"),由此派生出了各种层类。如果做数据特征表达相关的研究，需要修改这部分。Layer类派生出来的层类通过这 实现两个虚函数`Forward()`和`Backward()`,产生了各种功能的 层类。Forward是从根据bottom计算top的过程,Backward则刚好相反。
 在网路结构定义文件(*.proto)中每一层的参数bottom和top数目 就决定了vector中元素数目。
 
 一起来看看Layer.hpp
+
 ```C
 #include <algorithm>
 #include <string>
@@ -205,6 +221,7 @@ class Layer {
   virtual ~Layer() {}
 ...
 ```
+
 Layer中三个重要参数:<br>
 `LayerParameter layer_param_;`这个是protobuf文件中存储的layer参数。<br>
 `vector<share_ptr<Blob<Dtype>>> blobs_;`这个存储的是layer学习到的参数。<br>
@@ -216,10 +233,12 @@ Layer中三个重要参数:<br>
 `Caffe::mode()`具体选择使用CPU或GPU操作。<br>
 
 #### 2.3.4 **Net**
+
 Net是网络的搭建部分，将Layer所派生出层类组合成网络。
 Net用容器的形式将多个Layer有序地放在一起，它自己的基本功能主要 是对逐层Layer进行初始化,以及提供Update( )的接口用于更新网络参数, 本身不能对参数进行有效地学习过程。
+
 ```C
-￼vector<shared_ptr<Layer<Dtype> > > layers_;`
+ vector<shared_ptr<Layer<Dtype> > > layers_;
 ```
 Net也有它自己的`Forward()`和`Backward()`,他们是对整个网络的前向和反向传导，调用可以计算出网络的loss。
 Net由一系列的Layer组成(无回路有向图DAG)，Layer之间的连接由一个文本文件描述。模型初始化Net::Init()会产生blob和layer并调用Layer::SetUp。 在此过程中Net会报告初始化进程。这里的初始化与设备无关,在初始化之后通过Caffe::set_mode()设置Caffe::mode()来选择运行平台CPU或 GPU,结果是相同的。
@@ -249,14 +268,18 @@ top_vecs_存每一层输出(top)的blob <br>
 更多细节可以参考[这篇博客](http://blog.csdn.net/qq_16055159/article/details/45057297)
 
 ### 2.3.5 **Solver**
+
 Solver是Net的求解部分，研究深度学习求解与最优化的同学会修改这部分内容。Solver类中包含一个Net指针，主要实现了训练模型参数所采用的优化算法，它所派生的类完成对整个网络进行训练。
+
 ```C
 shared_ptr<Net<Dtype> > net_;
 ```
+
 不同的模型训练方法通过重载函数`ComputeUpdateValue( )`实现计算update参数的核心功能。
 最后当进行整个网络训练过程（即运行Caffe训练模型）的时 候，会运行caffe.cpp中的train( )函数，而这个train函数实际上是实 例化一个Solver对象，初始化后调用了Solver中的Solve( )方法。
 
 头文件主要包括solver.hpp、sgd_solvers.hpp、solver_factory.hpp
+
 ```C
 class Solver {...}
 class SGDSolver : public Solver<Dtype>{...}
@@ -268,6 +291,7 @@ Solver<Dtype>* GetSolver(const SolverParameter& param) {...}
 ```
 
 包含的主要函数和介绍如下：
+
 `Solver()`构造函数，初始化net和test_net两个net类，并调用init函数初始化网络，解释详见官方文档页;
 Solve()训练网络有如下步骤:
 
@@ -280,6 +304,7 @@ Solve()训练网络有如下步骤:
 7. 对于每一次训练时的迭代(遍历整个网络)
 
 对于第7步，训练时的迭代，有如下的过程：
+
 ```
 while (iter_++ < param_.max_iter())
     1.计算loss:loss = net_->ForwardBackward(bottom_vec)     
@@ -290,6 +315,7 @@ while (iter_++ < param_.max_iter())
 ```
 
 关于Test() 测试网络。有如下过程:
+
 ```
 1. 设置当前阶段(TRAIN还是TEST)
 2. 将test_net_指向net_,即对同一个网络操作
@@ -302,6 +328,7 @@ result = test_net_->Forward(bottom_vec, &iter_loss);
     3.3.是否要输出Test loss,是否要输出test_score;     
     3.4.设置当前阶段(TRAIN还是TEST)
 ```
+
 基本函数的一个简易介绍如下：<br>
 `Snapshot()`输出当前网络状态到一个文件中; <br>
 `Restore()`从一个文件中读入网络状态,并可以从那个状态恢复; <br>

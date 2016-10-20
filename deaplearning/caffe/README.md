@@ -1,4 +1,11 @@
-# Caffe
+---
+layout: post
+title:  Caffe
+date:   2016-10-20 11:11:00 +0800
+categories: Caffe
+rank: 0
+---
+
 
 项目地址：[http://caffe.berkeleyvision.org/](http://caffe.berkeleyvision.org/)
 
