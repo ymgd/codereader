@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Caffe
+title:  Caffe项目说明
 date:   2016-10-20 11:11:00 +0800
 categories: Caffe
 tag: C++
