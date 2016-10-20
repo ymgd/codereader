@@ -30,9 +30,7 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 
 所以[caffe](http://caffe.berkeleyvision.org/)也定义了环环相扣的类，来更好地完成上述的过程。我们看到这里一定涉及**数据**，**网络层**，**网络结构**，**最优化网络**几个部分，在caffe中同样是这样一个想法，[caffe的源码目录结构](https://github.com/BVLC/caffe/tree/master/src/caffe)如下。
 
-<center>
 ![](http://7xo0y8.com1.z0.glb.clouddn.com/caffe_menu.png)
-</center>
 
 在很多地方都可以看到介绍说caffe种贯穿始终的是Blob，Layer，Net，Solver这几个大类。这四个大类分别负责数据传输、网络层次、网络骨架与参数求解策略，呈现一个自下而上，环环相扣的状态。在源码中可以找到对应这些名称的实现，详细说来，这4个部分分别负责：
 
