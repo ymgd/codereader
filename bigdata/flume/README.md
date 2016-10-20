@@ -3,6 +3,7 @@ layout: post
 title:  Flume项目说明
 date:   2016-10-13 11:11:00 +0800
 categories: Flume
+tag: Java
 rank: 0
 ---
 

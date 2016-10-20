@@ -4,6 +4,7 @@ title:  Caffe源码导读
 date:   2016-10-20 11:11:00 +0800
 categories: Caffe
 rank: 10
+tag: C++
 author: hanxiaoyang
 ---
 

@@ -4,6 +4,7 @@ title:  Hadoop认证代码分析
 date:   2016-10-16 02:08:00 +0800
 categories: Hadoop
 author: kennethxian
+tag: Java
 rank: 10
 ---
 

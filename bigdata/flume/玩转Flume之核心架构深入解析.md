@@ -3,6 +3,7 @@ layout: post
 title:  玩转Flume之核心架构深入解析
 date:   2016-10-17 11:18:00 +0800
 categories: Flume
+tag: Java
 rank: 10
 ---
 
