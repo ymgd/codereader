@@ -46,3 +46,9 @@ rank: 10
 
 &emsp;&emsp;RDD从直观上可以看作一个数组，本质上是逻辑分区记录的集合。在集群中，一个RDD可以包含多个分布在不同的节点上的分区，每个分区是一个dataset片段，如图2-1所示。
 
+![][1]
+
+
+
+[1]: {{ '/bigdata/spark/resources/model/2-1RDD-Partition.png' | prepend: site.baseurl  }}
+
