@@ -331,6 +331,76 @@ def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], preservesPartition
 
 ![][20]
 
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-18 foreach
+
+&emsp;&emsp;图中，定义了println打印函数，打印RDD中所有数据项。
+
+&emsp;&emsp;2.HDFS
+
+&emsp;&emsp;(1) saveAsTextFile：函数将RDD保存为文本至HDFS指定目录，每次输出一行。
+
+&emsp;&emsp;功能示例如图2-19所示：
+
+![][21]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-19 saveAsTextFile
+
+&emsp;&emsp;图中，通过函数将RDD中每个元素映射为（null,x.toString)，然后写入HDFS block。RDD的每个分区存储为HDFS中的数据块Block。
+
+&emsp;&emsp;(2) saveAsObjectFile：将RDD分区中每10个元素保存为一个数组并将其序列化，映射为（null,BytesWritable(Y)）的元素，以SequenceFile的格式写入HDFS。如图2-20所示：
+
+![][22]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-20 saveAsObjectFile
+
+
+&emsp;&emsp;3.Scala集合及数据类型
+
+&emsp;&emsp;(1) collect：将RDD分散性存储的元素转换为单机上的Scala数组并返回，类似于toArray功能。如图2-21所示：
+
+![][23]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-21 collect
+
+
+&emsp;&emsp;(2) collectAsMap：与collect类似，针对元素类型为key-value对的RDD，将其转换为Scala Map并返回，保存元素的KV结构。
+
+&emsp;&emsp;(3) lookup：扫描RDD所有元素，选择与参数匹配的Key，并将其value以Scala sequence的形式返回。如图2-22所示：
+
+![][24]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-22 lookup
+
+&emsp;&emsp;(4) reduceByKeyLocally：先reduce,然后collectAsMap。
+
+&emsp;&emsp;(5) count：返回RDD中元素个数。
+
+&emsp;&emsp;(6) reduce：对RDD中所有元素进行reduceLeft操作。
+
+&emsp;&emsp;例如，当用户函数定义为：`f:(A,B)=>(A._1+"@"+B._1,A._2+B._2)`时，reduce算子计算过程如图2-23所示：
+
+![][25]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-23 reduce
+
+&emsp;&emsp;(7) top/take：返回RDD中最大/最小的K个元素。
+
+&emsp;&emsp;(8) fold：与reduce类似，不同的时候每次对分区内value聚集时，分区内初始化的值为zero value。
+
+&emsp;&emsp;例如，当用户自定义函数为：`fold(("A0",0))((A,B)=>A._1+"@"+B._1， A._2 + B._2 ))`时，fold算子计算过程如图2-24所示：
+
+![][26]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-24 fold
+
+
+
+&emsp;&emsp;(9) aggregate：允许用户对RDD使用两个不同的reduce函数，第一个reduce函数对各个分区内的数据聚集，每个分区得到一个结果。第二个reduce函数对每个分区的结果进行聚集，最终得到一个总的结果。aggregate相当于对RDD内元素数据归并聚集，且这种聚集是可以并行化的。而fold与reduced的聚集是串行的。
+
+&emsp;&emsp;(10) broadcast(广播变量)：存储在单节点内存中，不需要跨节点存储。Spark运行时将广播变量数据分发到各个节点，可以跨作业共享。
+
+&emsp;&emsp;(11) accucate：允许全局累加操作。accumulator被广泛应用于记录应用运行参数。
+
 
 [1]: {{ '/bigdata/spark/resources/model/2-1RDD-Partition.png' | prepend: site.baseurl  }}
 [2]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
@@ -352,4 +422,9 @@ def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], preservesPartition
 [18]: {{ '/bigdata/spark/resources/model/2-16partitionByKey.png' | prepend: site.baseurl  }}
 [19]: {{ '/bigdata/spark/resources/model/2-17coGroup.png' | prepend: site.baseurl  }}
 [20]: {{ '/bigdata/spark/resources/model/2-18foreach.png' | prepend: site.baseurl  }}
-
+[21]: {{ '/bigdata/spark/resources/model/2-19saveAsTextFile.png' | prepend: site.baseurl  }}
+[22]: {{ '/bigdata/spark/resources/model/2-20saveAsObjectFile.png' | prepend: site.baseurl  }}
+[23]: {{ '/bigdata/spark/resources/model/2-21collect.png' | prepend: site.baseurl  }}
+[24]: {{ '/bigdata/spark/resources/model/2-22lookup.png' | prepend: site.baseurl  }}
+[25]: {{ '/bigdata/spark/resources/model/2-23reduce.png' | prepend: site.baseurl  }}
+[26]: {{ '/bigdata/spark/resources/model/2-24fold.png' | prepend: site.baseurl  }}
