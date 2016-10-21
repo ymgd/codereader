@@ -48,7 +48,183 @@ rank: 10
 
 ![][1]
 
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-1 RDD 分区
+
+&emsp;&emsp;图2-1中，RDD-1含有3个分区(p1、p2和p3)，分布存储在2个节点上：node1与node2。RDD-2只有一个分区P4，存储在node3节点上。RDD-3含有2个分区P5和P6，存储在node4节点上。
+
+&emsp;&emsp;(1) RDD依赖
+
+&emsp;&emsp;RDD可以相互依赖，如果RDD的每个分区最多只能被一个Child RDD的一个分区使用，则称之为narrow dependency；若多个Child RDD分区都可以依赖，则称之为wide dependency。不同的操作依据其特性，可能会产生不同的依赖，例如：map操作会产生narrow dependency，而join操作则产生wide dependency，如图2-2所示：
+
+![][2]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-2 RDD Dependency
+
+
+&emsp;&emsp;(2) RDD支持容错性
+
+&emsp;&emsp;支持容错通常采用两种方式：日志记录或者数据复制。对于以数据为中心的系统而言，这两种方式都非常昂贵，因为它需要跨集群网络拷贝大量数据。
+
+&emsp;&emsp;RDD天生是支持容错的。首先，它自身是一个不变的(immutable)数据集，其次，RDD之间通过lineage产生依赖关系(在下章来继续探讨这个话题)，因此RDD能够记住构建它的操作图，因此当执行任务的Worker失败时，完全可以通过操作图获得之前执行的操作，进行重新计算。因此无需采用replication方式支持容错，很好地降低了跨网络的数据传输成本。
+
+
+&emsp;&emsp;(3) RDD如何做到高效率？
+
+&emsp;&emsp;RDD提供了两方面的特性persistence(持久化)和partitioning(分区)，用户可以通过persist与partitionBy函数来控制这两个特性。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。如果将分区与持久化二者结合起来，就能更加高效地处理海量数据。
+
+&emsp;&emsp;另外，RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如：存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。
+
+&emsp;&emsp;再者，如前文所述，RDD将操作分为两类：Transformation与Action。无论执行了多少次Transformation操作，RDD都不会真正执行运算，只有当Action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。
+
+&emsp;&emsp;在实现时，RDD针对Transformation操作，都提供了对应的继承自RDD的类型，例如：map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。
+
+### 2.1.3 RDD特性总结
+
+&emsp;&emsp;RDD是Spark的核心，也是整个Spark的架构基础。它的特性可以总结如下：
+
+&emsp;&emsp;(1) RDD是不变的(immutable)数据结构存储。
+
+&emsp;&emsp;(2) RDD将数据存储在内存中，从而提供了低延迟性。
+
+&emsp;&emsp;(3) RDD是支持跨集群的分布式数据结构。
+
+&emsp;&emsp;(4) RDD可以根据记录的Key对结构分区。
+
+&emsp;&emsp;(5) RDD提供了粗粒度的操作，并且都支持分区。
+
+
+## 2.2 Spark程序模型
+
+&emsp;&emsp;下面给出一个经典的统计日志中ERROR的例子，以便读者对Spark程序模型产生直观的理解。
+
+&emsp;&emsp;(1) SparkContext中的textFile函数从存储系统(如HDFS)中读取日志文件，生成file变量。
+
+&emsp;&emsp;`scala> var file = sc.textFile("hdfs：//...")`
+
+&emsp;&emsp;(2) 统计日志文件中，所有含ERROR的行。
+
+&emsp;&emsp;`scala> var errors = file.filer(line=>line.contains("ERROR"))`
+
+&emsp;&emsp;(3) 返回包含ERROR的行数： `errors.count()`。
+
+&emsp;&emsp;操作RDD与Scala集合非常类似，这是Spark努力追求的目标：像编写单机程序一样编写分布式应用。但二者的数据和运行模型却有很大不同。如图2-3所示：
+
+![][3]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-3 Spark程序模型
+
+&emsp;&emsp;在图2-3中，每一次对RDD的操作都造成了RDD的变换。其中RDD的每个逻辑分区Partition都对应于Block Manager(物理存储管理器)中的物理数据块Block(保存在内存或硬盘上)。前文已强调，RDD是应用程序中核心的元数据结构，其中保存了逻辑分区与物理数据块之间的映射关系，另外，还保存了父辈RDD的依赖转换关系。
+
+
+
+## 2.3 Spark算子
+
+&emsp;&emsp;本节介绍Spark算子的分类及其功能。
+
+### 2.3.1 算子简介
+
+&emsp;&emsp;Spark应用程序的本质，无非是把需要处理的数据转换为RDD，然后将RDD通过一系列的变换(Transformation)和操作(Action)而得到结果，简要来说，这些变换和操作即为算子。
+
+&emsp;&emsp;Spark支持的主要算子如图2-4所示：
+
+![][4]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-4 Spark支持的算子
+
+
+&emsp;&emsp;根据算子所处理的数据类型及处理阶段的不同，算子大致可以分为如下三类：
+ 
+&emsp;&emsp;(1) 处理Value数据类型的Transformation算子，这种变换并不触发提交作业，针对处理的数据项是Value型的数据。
+ 
+&emsp;&emsp;(2) 处理Key-Value数据类型的Transfromation算子，这种变换并不触发提交作业，针对处理的数据项是Key-Value型的数据对。
+ 
+&emsp;&emsp;(3) Action算子，这类算子触发SparkContext提交作业。
+
+
+### 2.3.2 Value型Transmation算子
+
+
+&emsp;&emsp;对于处理Value类型数据的Transformation算子，依据RDD的输入分区与输出分区的对应关系，可以将该类算子分为5类，如表2-1所示：
+
+![][5]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;表2-1 Value型算子分类
+
+&emsp;&emsp;如上表2-1所示，value型的Transformation算子分类具体如下：
+
+&emsp;&emsp;(1) 输入分区与输出分区1对1型。
+
+&emsp;&emsp;(2) 输入分区与输出分区多对1型。
+
+&emsp;&emsp;(3) 输入分区与输出分区多对多型。
+
+&emsp;&emsp;(4) 输出分区为输入分区子集。
+
+&emsp;&emsp;(5) Cache型，对RDD的分区缓存。
+
+&emsp;&emsp;下面对这五种分类进行详细介绍：
+
+&emsp;&emsp;1.输入分区与输出分区1对1型
+
+&emsp;&emsp;(1) map算子: map是对RDD中的每个元素都执行一个指定的函数来产生一个新的RDD。任何原RDD中的元素在新RDD中都有且只有一个元素与之对应。如图2-5所示：
+
+![][6]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-5 Map
+
+&emsp;&emsp;图中RDD-1中的元素V1经过函数映射后，变为新的元素V'1，最终构成新的RDD-2。输入输出分区1对1没有变化。注意，事实上，只有Action算子被触发后，这些操作才会真正被执行。
+
+&emsp;&emsp;(2) flatMap： 与map类似，将原RDD中的每个元素通过函数f转换为新的元素后，并将这些元素放入一个集合，构成新的RDD。如图2-6所示：
+
+![][7]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-6 flatMap
+
+&emsp;&emsp;&emsp;&emsp;图中外面大的矩形表示分区，小的矩形表示元素集合。如元素A1，A2在RDD-1中属于一个集合，B1，B2，B3属于另一个集合。RDD-1经过flatMap变换之后，在新的RDD-2中，A'与B'处于同一集合中。
+
+
+&emsp;&emsp;(3) mapPartitions：mapPartitions是map的一个变种。map的输入函数是应用于RDD中每个元素，而mapPartitions的输入函数是应用于每个分区，也就是把每个分区中的内容作为整体来处理的。 
+
+&emsp;&emsp;它的函数定义为：
+
+```scala
+def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], preservesPartitioning: Boolean = false): RDD[U]
+```
+
+&emsp;&emsp;f 即为输入函数，它处理每个分区里面的内容。每个分区中的内容将以Iterator[T]传递给输入函数f，f的输出结果是Iterator[U]。最终的RDD由所有分区经过输入函数处理后的结果合并起来的。如图2-7所示：
+
+![][8]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-7 mapPartitions
+
+&emsp;&emsp;在图中，用户通过f(iter)=>iter.filter(_>0)对元素过滤，保留大于0的元素。其中方框为分区，虽然过滤了元素，但原有分区保持不变。
+
+&emsp;&emsp;(4) glom：将每个分区内的元素组成一个数组，分区不变。如图2-8所示：
+
+![][9]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-8 glom
+
+&emsp;&emsp;图中方框代表分区，glom算子将每个分区内的元素组成一个数组。
+
+
+&emsp;&emsp;2.输入分区与输出分区多对1型
+
+&emsp;&emsp;(1) union: 合并同一数据类型元素，但不去重。合并后返回同类型的数据元素。如图2-9所示：
+
+![][10]
+
 
 
 [1]: {{ '/bigdata/spark/resources/model/2-1RDD-Partition.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/2-3Spark-example.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/spark/resources/model/2-4T&A.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/spark/resources/model/b2-1value-Transformation.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/spark/resources/model/2-5Map.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/spark/resources/model/2-6flatMap.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/spark/resources/model/2-7mapPartitions.png' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/spark/resources/model/2-8glom.png' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/spark/resources/model/2-9union.png' | prepend: site.baseurl  }}
 
