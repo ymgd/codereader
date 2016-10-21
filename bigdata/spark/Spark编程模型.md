@@ -214,11 +214,126 @@ def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], preservesPartition
 
 ![][10]
 
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-9 union
+
+&emsp;&emsp;&emsp;&emsp;图中大方框代表RDD，内部小方框代表RDD分区，合并后同一类型元素位于同一分区中。
+
+&emsp;&emsp;&emsp;&emsp;(2) cartesian：对输入RDD内的所有元素计算笛卡尔积。如图2-10所示：
+
+![][11]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-10 cartesian
+
+
+&emsp;&emsp;3.输入分区与输出分区多对多型
+
+&emsp;&emsp;(1) groupBy：先将元素通过函数生成key,元素在转为“key-value”类型之后，将key相同的元素分为一组。如下图2-11所示：
+
+![][12]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-11 groupBy
+
+&emsp;&emsp;图中可以看到三个分区，经过groupBy变换后，key相同的元素被合并到一组。
+
+&emsp;&emsp;4.输出分区为输入分区子集
+
+&emsp;&emsp;(1) filter : 对RDD中的元素进行过滤，过滤函数返回true的元素保留，否则删除。如下图2-12所示：
+
+![][13]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-12 filter
+
+&emsp;&emsp;图中方框为RDD的分区。
+
+&emsp;&emsp;(2) distinct：对RDD中的元素进行去重操作，对重复的元素只保留一份。
+
+&emsp;&emsp;(3) substract：对集合进行差操作。即RDD1中去除RDD1与RDD2的交集。
+
+&emsp;&emsp;(4) sample： 对RDD集合内的元素采样。
+
+&emsp;&emsp;(5) takesample：与sample算子类似，可以设定采样个数。
+
+
+&emsp;&emsp;5.Cache型（RDD持久化操作）
+
+&emsp;&emsp;(1) cache：将RDD元素从磁盘缓存到内存。
+
+&emsp;&emsp;(2) persist：与cache类似，但比cache功能更强大，persist函数可以指定存储级别。完整的存储级别列表如表2-2所示：
+
+![][14]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;表2-2 Storage Level
+
+### 2.3.3 Key-Value型Transmation算子
+
+&emsp;&emsp;处理数据类型为Key-Value的Transmation算子，大致可以分为三类：
+
+&emsp;&emsp;1.输入输出分区1对1
+
+&emsp;&emsp;mapValues：顾名思义就是输入函数应用于RDD中KV(Key-Value)类型元素中的Value，原RDD中的Key保持不变，与新的Value一起组成新的RDD中的元素。因此，该函数只适用于元素为Key-Value对的RDD。如图2-13所示：
+
+![][15]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-13 mapValues
+
+&emsp;&emsp;图中输入函数对value分别进行加10操作，形成新的RDD包含KV类型新元素。
+
+
+&emsp;&emsp;2.聚集操作
+
+&emsp;&emsp;(1) 对一个RDD聚集
+
+&emsp;&emsp;&emsp;&emsp;(a) reduceByKey：对元素为KV对的RDD中Key相同的元素的Value进行reduce，即两个值合并为一个值。因此，Key相同的多个元素的值被reduce为一个值，然后与原RDD中的Key组成一个新的KV对。如图2-14所示：
+
+![][16]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-14 reduceByKey
+
+&emsp;&emsp;&emsp;&emsp;(b) combineByKey： 与reduceByKey类似，相当于将元素（int,int）KV对，变换为（int,Seq[int]）新的KV对。如图2-15所示：
+
+![][17]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-15 combineByKey
+
+&emsp;&emsp;&emsp;&emsp;(c) partitionBy：根据KV对的Key对RDD进行分区。如图2-16所示：
+
+![][18]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-16 partitionBy
+
+&emsp;&emsp;(2) 对两个RDD聚集
+
+&emsp;&emsp;coGroup：一组强大的函数，可以对多达3个的RDD根据key进行分组。对每个Key相同的元素分别聚集为一个集合。如图2-17所示：
+
+![][19]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-17 coGroup
+
+&emsp;&emsp;图2-17中，大方框为RDD，内部小方框为RDD中的分区。
+
+&emsp;&emsp;3.连接
+
+&emsp;&emsp;(1) join：本质是对两个含有KV对元素的RDD进行cogroup算子协同划分，再通过flatMapValues将合并的数据分散。
+
+&emsp;&emsp;(2) leftOutJoin与rightOutJoin ：相当于在join基础上判断一侧的RDD是否为空，如果为空则填充空，如果有数据，则将数据进行连接计算，然后返回结果。
+
+### 2.3.4 Action算子
+
+&emsp;&emsp;Action算子可以依据其输出空间将其划分为：无输出，HDFS，Scala集合和数据类型。
+
+&emsp;&emsp;1.无输出
+
+&emsp;&emsp;foreach：对RDD中的每个元素执行无参数的f函数，返回Unit。定义如下：
+
+&emsp;&emsp;`def foreach(f: T => Unit)`
+
+&emsp;&emsp;foreach功能示例如图2-18所示：
+
+![][20]
 
 
 [1]: {{ '/bigdata/spark/resources/model/2-1RDD-Partition.png' | prepend: site.baseurl  }}
 [2]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
-[3]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
 [3]: {{ '/bigdata/spark/resources/model/2-3Spark-example.png' | prepend: site.baseurl  }}
 [4]: {{ '/bigdata/spark/resources/model/2-4T&A.png' | prepend: site.baseurl  }}
 [5]: {{ '/bigdata/spark/resources/model/b2-1value-Transformation.png' | prepend: site.baseurl  }}
@@ -227,4 +342,14 @@ def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], preservesPartition
 [8]: {{ '/bigdata/spark/resources/model/2-7mapPartitions.png' | prepend: site.baseurl  }}
 [9]: {{ '/bigdata/spark/resources/model/2-8glom.png' | prepend: site.baseurl  }}
 [10]: {{ '/bigdata/spark/resources/model/2-9union.png' | prepend: site.baseurl  }}
+[11]: {{ '/bigdata/spark/resources/model/2-10cartesian.png' | prepend: site.baseurl  }}
+[12]: {{ '/bigdata/spark/resources/model/2-11groupBy.png' | prepend: site.baseurl  }}
+[13]: {{ '/bigdata/spark/resources/model/2-12filter.png' | prepend: site.baseurl  }}
+[14]: {{ '/bigdata/spark/resources/model/b2-2storageLevel.png' | prepend: site.baseurl  }}
+[15]: {{ '/bigdata/spark/resources/model/2-13mapValues.png' | prepend: site.baseurl  }}
+[16]: {{ '/bigdata/spark/resources/model/2-14reduceByKey.png' | prepend: site.baseurl  }}
+[17]: {{ '/bigdata/spark/resources/model/2-15combineByKey.png' | prepend: site.baseurl  }}
+[18]: {{ '/bigdata/spark/resources/model/2-16partitionByKey.png' | prepend: site.baseurl  }}
+[19]: {{ '/bigdata/spark/resources/model/2-17coGroup.png' | prepend: site.baseurl  }}
+[20]: {{ '/bigdata/spark/resources/model/2-18foreach.png' | prepend: site.baseurl  }}
 
