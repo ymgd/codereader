@@ -1,4 +1,12 @@
-# Spark 编程模型
+---
+layout: post
+title:  Spark编程模型
+date:   2016-10-21 02:08:00 +0800
+categories: Spark
+tag: Scala
+rank: 10 
+---
+
 
 &emsp;&emsp;与Hadoop相比，Spark最初为提升性能而诞生。Spark是Hadoop Mapreduce的演化和改进，并兼容并包了一些数据库的基本思想，因此可以说，Spark一开始就站在Hadoop与数据库这两个巨人的肩膀上。与此同时，Spark依靠Scala强大的函数式编程，Actor通信模式，闭包，容器，泛型，并借助统一资源调度框架，使得Spark成为一个简洁、高效、强大的分布式大数据处理框架。
 
@@ -394,29 +402,30 @@ def mapPartitions[U: ClassTag](f: Iterator[T] => Iterator[U], preservesPartition
 &emsp;&emsp;(11) accucate：允许全局累加操作。accumulator被广泛应用于记录应用运行参数。
 
 
-[1]: resources/model/2-1RDD-Partition.png
-[2]: resources/model/2-2RDD-Dependency.png
-[3]: resources/model/2-3Spark-example.png
-[4]: resources/model/2-4T&A.png
-[5]: resources/model/b2-1value-Transformation.png
-[6]: resources/model/2-5Map.png
-[7]: resources/model/2-6flatMap.png
-[8]: resources/model/2-7mapPartitions.png
-[9]: resources/model/2-8glom.png
-[10]: resources/model/2-9union.png
-[11]: resources/model/2-10cartesian.png
-[12]: resources/model/2-11groupBy.png
-[13]: resources/model/2-12filter.png
-[14]: resources/model/b2-2storageLevel.png
-[15]: resources/model/2-13mapValues.png
-[16]: resources/model/2-14reduceByKey.png
-[17]: resources/model/2-15combineByKey.png
-[18]: resources/model/2-16partitionByKey.png
-[19]: resources/model/2-17coGroup.png
-[20]: resources/model/2-18foreach.png
-[21]: resources/model/2-19saveAsTextFile.png
-[22]: resources/model/2-20saveAsObjectFile.png
-[23]: resources/model/2-21collect.png
-[24]: resources/model/2-22lookup.png
-[25]: resources/model/2-23reduce.png
-[26]: resources/model/2-24fold.png
+[1]: {{ '/bigdata/spark/resources/model/2-1RDD-Partition.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/2-3Spark-example.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/spark/resources/model/2-4T&A.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/spark/resources/model/b2-1value-Transformation.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/spark/resources/model/2-5Map.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/spark/resources/model/2-6flatMap.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/spark/resources/model/2-7mapPartitions.png' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/spark/resources/model/2-8glom.png' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/spark/resources/model/2-9union.png' | prepend: site.baseurl  }}
+[11]: {{ '/bigdata/spark/resources/model/2-10cartesian.png' | prepend: site.baseurl  }}
+[12]: {{ '/bigdata/spark/resources/model/2-11groupBy.png' | prepend: site.baseurl  }}
+[13]: {{ '/bigdata/spark/resources/model/2-12filter.png' | prepend: site.baseurl  }}
+[14]: {{ '/bigdata/spark/resources/model/b2-2storageLevel.png' | prepend: site.baseurl  }}
+[15]: {{ '/bigdata/spark/resources/model/2-13mapValues.png' | prepend: site.baseurl  }}
+[16]: {{ '/bigdata/spark/resources/model/2-14reduceByKey.png' | prepend: site.baseurl  }}
+[17]: {{ '/bigdata/spark/resources/model/2-15combineByKey.png' | prepend: site.baseurl  }}
+[18]: {{ '/bigdata/spark/resources/model/2-16partitionByKey.png' | prepend: site.baseurl  }}
+[19]: {{ '/bigdata/spark/resources/model/2-17coGroup.png' | prepend: site.baseurl  }}
+[20]: {{ '/bigdata/spark/resources/model/2-18foreach.png' | prepend: site.baseurl  }}
+[21]: {{ '/bigdata/spark/resources/model/2-19saveAsTextFile.png' | prepend: site.baseurl  }}
+[22]: {{ '/bigdata/spark/resources/model/2-20saveAsObjectFile.png' | prepend: site.baseurl  }}
+[23]: {{ '/bigdata/spark/resources/model/2-21collect.png' | prepend: site.baseurl  }}
+[24]: {{ '/bigdata/spark/resources/model/2-22lookup.png' | prepend: site.baseurl  }}
+[25]: {{ '/bigdata/spark/resources/model/2-23reduce.png' | prepend: site.baseurl  }}
+[26]: {{ '/bigdata/spark/resources/model/2-24fold.png' | prepend: site.baseurl  }}
