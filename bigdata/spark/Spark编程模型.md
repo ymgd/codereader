@@ -10,3 +10,162 @@ rank: 10
 
 &emsp;&emsp;与Hadoop相比，Spark最初为提升性能而诞生。Spark是Hadoop Mapreduce的演化和改进，并兼容并包了一些数据库的基本思想，因此可以说，Spark一开始就站在Hadoop与数据库这两个巨人的肩膀上。与此同时，Spark依靠Scala强大的函数式编程，Actor通信模式，闭包，容器，泛型，并借助统一资源调度框架，使得Spark成为一个简洁、高效、强大的分布式大数据处理框架。
 
+&emsp;&emsp;Spark在运算期间，将输入数据与中间计算结果保存在内存中，直接在内存中计算。另外，用户也可以将重复利用的数据缓存在内存中，缩短数据读写时间，以提高下次计算的效率。显而易见，Spark基于内存计算的特性使其擅长于迭代式与交互式任务，但也不难发现，Spark需要大量内存来完成计算任务。集群规模与Spark性能之间呈正比关系，随着集群中机器数量的增长，Spark的性能也呈线性增长。接下来将对Spark编程模型进行详细地介绍。
+
+## 2.1 RDD弹性分布式数据集
+
+&emsp;&emsp;通常来讲，针对数据处理有几种常见模型，包括：Iterative Algorithms，Relational Queries，MapReduce，Stream Processing。例如：Hadoop MapReduce采用了MapReduce模型，Storm则采用了Stream Processing模型。
+
+&emsp;&emsp;与许多其他大数据处理平台不同，Spark建立在统一抽象的RDD之上，而RDD混合了上述这四种模型，因此使得Spark能以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这契合了Matei Zaharia提出的原则：“设计一个通用的编程抽象(Unified Programming Abstraction)”，这也正是Spark的魅力所在，因此要理解Spark，先要理解RDD的概念。
+
+### 2.1.1 RDD简介
+
+&emsp;&emsp;RDD全称为Resilient Distributed Datasets，即弹性分布式数据集。RDD是一个容错的、并行的数据结构，可以让用户显式地将数据存储到磁盘或内存中，并能控制数据的分区。同时，RDD还提供了一组丰富的操作来操作这些数据，在这些操作中，诸如map、flatMap、filter等转换操作实现了monad模式，很好地契合了Scala的集合操作。除此之外，RDD还提供了诸如join、groupBy、reduceByKey等更为方便的操作以支持常见的数据运算。
+
+&emsp;&emsp;RDD是Spark的核心数据结构，通过RDD的依赖关系形成Spark的调度顺序。所谓Spark应用程序，本质是一组对RDD的操作。
+
+&emsp;&emsp;下面介绍RDD的创建方式及操作算子类型。
+
+&emsp;&emsp;(1) RDD的两种创建方式：
+
+&emsp;&emsp;&emsp;&emsp;(a) 从文件系统输入(如HDFS)创建。
+
+&emsp;&emsp;&emsp;&emsp;(b) 从已存在的RDD转换得到新的RDD。
+
+&emsp;&emsp;(2) RDD的两种操作算子：
+
+&emsp;&emsp;&emsp;&emsp;(a) Transformation(变换)
+
+&emsp;&emsp;&emsp;&emsp;Transformation类型的算子不是立刻执行,而是延迟执行。也就是说从一个RDD变换为另一个RDD的操作需要等到Action操作触发时，才会真正执行。
+
+&emsp;&emsp;&emsp;&emsp;(b) Action(行动)
+
+&emsp;&emsp;&emsp;&emsp;Action类型的算子会触发Spark提交作业，并将数据输出到Spark系统。
+
+### 2.1.2 深入RDD细节
+
+&emsp;&emsp;RDD从直观上可以看作一个数组，本质上是逻辑分区记录的集合。在集群中，一个RDD可以包含多个分布在不同的节点上的分区，每个分区是一个dataset片段，如图2-1所示。
+
+![][1]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-1 RDD 分区
+
+&emsp;&emsp;图2-1中，RDD-1含有3个分区(p1、p2和p3)，分布存储在2个节点上：node1与node2。RDD-2只有一个分区P4，存储在node3节点上。RDD-3含有2个分区P5和P6，存储在node4节点上。
+
+&emsp;&emsp;(1) RDD依赖
+
+&emsp;&emsp;RDD可以相互依赖，如果RDD的每个分区最多只能被一个Child RDD的一个分区使用，则称之为narrow dependency；若多个Child RDD分区都可以依赖，则称之为wide dependency。不同的操作依据其特性，可能会产生不同的依赖，例如：map操作会产生narrow dependency，而join操作则产生wide dependency，如图2-2所示：
+
+![][2]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-2 RDD Dependency
+
+
+&emsp;&emsp;(2) RDD支持容错性
+
+&emsp;&emsp;支持容错通常采用两种方式：日志记录或者数据复制。对于以数据为中心的系统而言，这两种方式都非常昂贵，因为它需要跨集群网络拷贝大量数据。
+
+&emsp;&emsp;RDD天生是支持容错的。首先，它自身是一个不变的(immutable)数据集，其次，RDD之间通过lineage产生依赖关系(在下章来继续探讨这个话题)，因此RDD能够记住构建它的操作图，因此当执行任务的Worker失败时，完全可以通过操作图获得之前执行的操作，进行重新计算。因此无需采用replication方式支持容错，很好地降低了跨网络的数据传输成本。
+
+
+&emsp;&emsp;(3) RDD如何做到高效率？
+
+&emsp;&emsp;RDD提供了两方面的特性persistence(持久化)和partitioning(分区)，用户可以通过persist与partitionBy函数来控制这两个特性。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。如果将分区与持久化二者结合起来，就能更加高效地处理海量数据。
+
+&emsp;&emsp;另外，RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如：存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。
+
+&emsp;&emsp;再者，如前文所述，RDD将操作分为两类：Transformation与Action。无论执行了多少次Transformation操作，RDD都不会真正执行运算，只有当Action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。
+
+&emsp;&emsp;在实现时，RDD针对Transformation操作，都提供了对应的继承自RDD的类型，例如：map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。
+
+### 2.1.3 RDD特性总结
+
+&emsp;&emsp;RDD是Spark的核心，也是整个Spark的架构基础。它的特性可以总结如下：
+
+&emsp;&emsp;(1) RDD是不变的(immutable)数据结构存储。
+
+&emsp;&emsp;(2) RDD将数据存储在内存中，从而提供了低延迟性。
+
+&emsp;&emsp;(3) RDD是支持跨集群的分布式数据结构。
+
+&emsp;&emsp;(4) RDD可以根据记录的Key对结构分区。
+
+&emsp;&emsp;(5) RDD提供了粗粒度的操作，并且都支持分区。
+
+
+## 2.2 Spark程序模型
+
+&emsp;&emsp;下面给出一个经典的统计日志中ERROR的例子，以便读者对Spark程序模型产生直观的理解。
+
+&emsp;&emsp;(1) SparkContext中的textFile函数从存储系统(如HDFS)中读取日志文件，生成file变量。
+
+&emsp;&emsp;`scala> var file = sc.textFile("hdfs：//...")`
+
+&emsp;&emsp;(2) 统计日志文件中，所有含ERROR的行。
+
+&emsp;&emsp;`scala> var errors = file.filer(line=>line.contains("ERROR"))`
+
+&emsp;&emsp;(3) 返回包含ERROR的行数： `errors.count()`。
+
+&emsp;&emsp;操作RDD与Scala集合非常类似，这是Spark努力追求的目标：像编写单机程序一样编写分布式应用。但二者的数据和运行模型却有很大不同。如图2-3所示：
+
+![][3]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-3 Spark程序模型
+
+&emsp;&emsp;在图2-3中，每一次对RDD的操作都造成了RDD的变换。其中RDD的每个逻辑分区Partition都对应于Block Manager(物理存储管理器)中的物理数据块Block(保存在内存或硬盘上)。前文已强调，RDD是应用程序中核心的元数据结构，其中保存了逻辑分区与物理数据块之间的映射关系，另外，还保存了父辈RDD的依赖转换关系。
+
+
+
+## 2.3 Spark算子
+
+&emsp;&emsp;本节介绍Spark算子的分类及其功能。
+
+### 2.3.1 算子简介
+
+&emsp;&emsp;Spark应用程序的本质，无非是把需要处理的数据转换为RDD，然后将RDD通过一系列的变换(Transformation)和操作(Action)而得到结果，简要来说，这些变换和操作即为算子。
+
+&emsp;&emsp;Spark支持的主要算子如图2-4所示：
+
+![][4]
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2-4 Spark支持的算子
+
+
+&emsp;&emsp;根据算子所处理的数据类型及处理阶段的不同，算子大致可以分为如下三类：
+ 
+&emsp;&emsp;(1) 处理Value数据类型的Transformation算子，这种变换并不触发提交作业，针对处理的数据项是Value型的数据。
+ 
+&emsp;&emsp;(2) 处理Key-Value数据类型的Transfromation算子，这种变换并不触发提交作业，针对处理的数据项是Key-Value型的数据对。
+ 
+&emsp;&emsp;(3) Action算子，这类算子触发SparkContext提交作业。
+
+
+
+[1]: {{ '/bigdata/spark/resources/model/2-1RDD-Partition.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/2-2RDD-Dependency.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/2-3Spark-example.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/spark/resources/model/2-4T&A.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/spark/resources/model/b2-1value-Transformation.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/spark/resources/model/2-5Map.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/spark/resources/model/2-6flatMap.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/spark/resources/model/2-7mapPartitions.png' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/spark/resources/model/2-8glom.png' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/spark/resources/model/2-9union.png' | prepend: site.baseurl  }}
+[11]: {{ '/bigdata/spark/resources/model/2-10cartesian.png' | prepend: site.baseurl  }}
+[12]: {{ '/bigdata/spark/resources/model/2-11groupBy.png' | prepend: site.baseurl  }}
+[13]: {{ '/bigdata/spark/resources/model/2-12filter.png' | prepend: site.baseurl  }}
+[14]: {{ '/bigdata/spark/resources/model/b2-2storageLevel.png' | prepend: site.baseurl  }}
+[15]: {{ '/bigdata/spark/resources/model/2-13mapValues.png' | prepend: site.baseurl  }}
+[16]: {{ '/bigdata/spark/resources/model/2-14reduceByKey.png' | prepend: site.baseurl  }}
+[17]: {{ '/bigdata/spark/resources/model/2-15combineByKey.png' | prepend: site.baseurl  }}
+[18]: {{ '/bigdata/spark/resources/model/2-16partitionByKey.png' | prepend: site.baseurl  }}
+[19]: {{ '/bigdata/spark/resources/model/2-17coGroup.png' | prepend: site.baseurl  }}
+[20]: {{ '/bigdata/spark/resources/model/2-18foreach.png' | prepend: site.baseurl  }}
+[21]: {{ '/bigdata/spark/resources/model/2-19saveAsTextFile.png' | prepend: site.baseurl  }}
+[22]: {{ '/bigdata/spark/resources/model/2-20saveAsObjectFile.png' | prepend: site.baseurl  }}
+[23]: {{ '/bigdata/spark/resources/model/2-21collect.png' | prepend: site.baseurl  }}
+[24]: {{ '/bigdata/spark/resources/model/2-22lookup.png' | prepend: site.baseurl  }}
+[25]: {{ '/bigdata/spark/resources/model/2-23reduce.png' | prepend: site.baseurl  }}
+[26]: {{ '/bigdata/spark/resources/model/2-24fold.png' | prepend: site.baseurl  }}
