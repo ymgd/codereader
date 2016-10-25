@@ -20,9 +20,7 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 
 所以[caffe](http://caffe.berkeleyvision.org/)也定义了环环相扣的类，来更好地完成上述的过程。我们看到这里一定涉及**数据**，**网络层**，**网络结构**，**最优化网络**几个部分，在caffe中同样是这样一个想法，[caffe的源码目录结构](https://github.com/BVLC/caffe/tree/master/src/caffe)如下。
 
-<center>
-![](http://7xo0y8.com1.z0.glb.clouddn.com/caffe_menu.png)
-</center>
+![][1]
 
 在很多地方都可以看到介绍说caffe种贯穿始终的是Blob，Layer，Net，Solver这几个大类。这四个大类分别负责数据传输、网络层次、网络骨架与参数求解策略，呈现一个自下而上，环环相扣的状态。在源码中可以找到对应这些名称的实现，详细说来，这4个部分分别负责：
 
@@ -30,6 +28,9 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 * **Layer**：是神经网络的基础单元，层与层间的数据节点、前后传递都在该数据结构中被实现，因神经网络网络中设计到多种层，这里layers下实现了卷积层、激励层，池化层，全连接层等等“积木元件”，丰富度很高。<br>
 * **Net**：是网络的整体搭建骨架，整合Layer中的层级机构组成网络。<br>
 * **Solver**：是网络的求解优化策略，让你用各种“积木”搭建的网络能最适应当前的场景下的样本，如果做深度学习优化研究的话，可能会修改这个模块。<br>
+
+![][2]
+
 
 ### 2.2 代码阅读顺序建议
 在对整体的结构有一个大致的印象以后，就可以开始阅读源码了，一个参考的阅读顺序大概是：
@@ -49,9 +50,16 @@ by [@寒小阳](http://blog.csdn.net/han_xiaoyang)<br>
 
 **Step 4**. [tools文件](https://github.com/BVLC/caffe/tree/master/tools)caffe提供的工具，目录在caffe-master\tools，例如计算图像均值，调优网络，可视化等。
 
-### 2.3 代码细节
+### 2.3 源码主线结构图
+caffe代码的一个精简源码主线结构图如下：
 
-#### 2.3.1 **caffe.proto**
+<center>
+![][3]
+</center>
+
+### 2.4 代码细节
+
+#### 2.4.1 **caffe.proto**
 caffe.proto是建议第一个阅读的部分，它位于…\src\caffe\proto目录下。首先要说明的是Google Protocol Buffer(简称 Protobuf) 是Google 公司内部的混合语言数据标准，是一种轻便高效的结构化数据存储格式，可以用于结构化数据串行化，或者说序列化。用来做数据存储或 RPC 数据交换格式。caffe.proto运行后会生成caffe.pb.cc和caffe.pb.h两个文件，包含了很多结构化数据。
 
 caffe.proto的一个message定义了一个需要传输的参数结构体，Package caffe可以把caffe.proto里面的所有文件打包存在caffe类里面。大致的代码框架如下：
@@ -111,7 +119,7 @@ Caffe.proto每个message在编译后都会自动生成一些函数，大概是�
 `LRNParameter`, `MemoryDataParameter`, `MVNParameter`, `PoolingParameter`, `PowerParameter`, `PythonParameter`, `ReLUParameter`, `SigmoidParameter`, `SliceParameter`, `SoftmaxParameter`, `TanHParameter`, `ThresholdParameter`等。<br>
 **属于net的**：`NetParameter`, `SolverParameter`, `SolverState`, `NetState`, `NetStateRule`, `ParamSpec`。
 
-### 2.3.2 **Blob**
+### 2.4.2 **Blob**
 前面说到了Blob是最基础的数据结构,用来保存网络传输 过程中产生的数据和学习到的一些参数。比如它的上一层Layer中会用下面的形式表示学习到的参数:`vector<shared_ptr<Blob<Dtype> > > blobs_;`里面的blob就是这里定义的类。
 部分代码如下：
 ```C
@@ -158,7 +166,7 @@ Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而d
 * `FromProto()`从proto读数据进来,其实就是反序列化。 <br>
 * `ToProto()`把blob数据保存到proto中。 ShareDate()/ShareDiff()从other的blob复制data和diff的值;<br>
 
-#### 2.3.3 **Layer**
+#### 2.4.3 **Layer**
 Layer是网络的基本单元("积木"),由此派生出了各种层类。如果做数据特征表达相关的研究，需要修改这部分。Layer类派生出来的层类通过这 实现两个虚函数`Forward()`和`Backward()`,产生了各种功能的 层类。Forward是从根据bottom计算top的过程,Backward则刚好相反。
 在网路结构定义文件(*.proto)中每一层的参数bottom和top数目 就决定了vector中元素数目。
 
@@ -215,7 +223,7 @@ Layer中三个重要参数:<br>
 `Forward()`和Backward()对应前向计算和反向更新,输入统一都是 bottom,输出为top,其中Backward里面有个propagate_down参数, 用来表示该Layer是否反向传播参数。<br>
 `Caffe::mode()`具体选择使用CPU或GPU操作。<br>
 
-#### 2.3.4 **Net**
+#### 2.4.4 **Net**
 Net是网络的搭建部分，将Layer所派生出层类组合成网络。
 Net用容器的形式将多个Layer有序地放在一起，它自己的基本功能主要 是对逐层Layer进行初始化,以及提供Update( )的接口用于更新网络参数, 本身不能对参数进行有效地学习过程。
 ```C
@@ -244,11 +252,11 @@ top_vecs_存每一层输出(top)的blob <br>
 `AppendTop()`在网络中附加新的输入或top的blob。 <br>
 `AppendBottom()`在网络中附加新的输入或bottom的blob。 <br>
 `AppendParam()`在网络中附加新的参数blob。<br>
-`GetLearningRateAndWeightDecay()`收集学习速率和权重衰减，即更 新params_、params_lr_和params_weight_decay_ ;
+`GetLearningRateAndWeightDecay()`收集学习速率和权重衰减，即更新params_、params_lr_和params_weight_decay_ ;
 
 更多细节可以参考[这篇博客](http://blog.csdn.net/qq_16055159/article/details/45057297)
 
-### 2.3.5 **Solver**
+### 2.4.5 **Solver**
 Solver是Net的求解部分，研究深度学习求解与最优化的同学会修改这部分内容。Solver类中包含一个Net指针，主要实现了训练模型参数所采用的优化算法，它所派生的类完成对整个网络进行训练。
 ```C
 shared_ptr<Net<Dtype> > net_;
@@ -309,3 +317,8 @@ result = test_net_->Forward(bottom_vec, &iter_loss);
 `ComputeUpdateValue()`用随机梯度下降法计算更新值;
 
 未完待续...
+
+
+[1]: resources/caffe_menu.png
+[2]: resources/caffe_components.png
+[3]: resources/caffe.png
