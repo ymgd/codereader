@@ -24,3 +24,11 @@ Caffe是由伯克利视觉与学习中心（Berkeley Vision and Learning Center�
 
 项目使用C++写成，同时，为了方便数据科学家们使用，对Python提供了相当友好的接口
 
+## 直播视频回看链接
+
+Caffe源码结构
+
+&emsp;&emsp;[回看链接](http://view.csslcloud.net/api/view/callback?roomid=A325248C353A1D8F9C33DC5901307461&userid=7C6A99C7DC8AE17F&liveid=943E242D856B3FF7)   进入密码：caffe
+
+&emsp;&emsp;[资料下载链接](http://pan.baidu.com/s/1dFiJ5V7) 密码：d44q
+
