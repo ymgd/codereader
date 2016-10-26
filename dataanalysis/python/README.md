@@ -1,4 +1,12 @@
-# Python数据分析
+---
+layout: post
+title:  Python数据分析
+date:   2016-10-26 17:08:00 +0800
+tag: Python 
+rank: 0
+author: 1987hasit
+---
+
 
 by [@梁斌](http://csusap.csu.edu.au/~bliang03/)<br>
 部分内容整理自互联网，感谢众多同学的分享。
