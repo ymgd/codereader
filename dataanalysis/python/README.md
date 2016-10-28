@@ -42,6 +42,7 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)<br>
 
 ### 3.2 代码讲解
 * [数据概述](./data_overview.ipynb)
+* [美剧对婴儿姓名的影响](./tv_inspired_baby_names.ipynb)
 
 未完待续...
 	
