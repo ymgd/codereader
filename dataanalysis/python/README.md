@@ -34,5 +34,12 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)<br>
 * [Pandas](http://pandas.pydata.org/)（Python Data Analysis Library），基于Numpy构建的含有更高级数据结构和工具的数据分析包。
 * [Scikit Learn](http://scikit-learn.org/)，基于Python的机器学习模块。
 
+## 3. 案例讲解
+
+### 3.1 案例说明
+* 全美婴儿姓名趋势分析
+* [项目地址](https://www.kaggle.com/kaggle/us-baby-names)
+* [代码分析](https://www.kaggle.com/dvasyukova/d/kaggle/us-baby-names/persistent-vs-spike-fade-names)
+
 未完待续...
 	
