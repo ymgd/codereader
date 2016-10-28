@@ -39,7 +39,7 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)<br>
 ### 3.1 案例说明
 * 全美婴儿姓名趋势分析
 * [项目地址](https://www.kaggle.com/kaggle/us-baby-names)
-* [代码分析](https://www.kaggle.com/dvasyukova/d/kaggle/us-baby-names/persistent-vs-spike-fade-names)
+* [代码参考](https://www.kaggle.com/dvasyukova/d/kaggle/us-baby-names/persistent-vs-spike-fade-names)
 
 未完待续...
 	
