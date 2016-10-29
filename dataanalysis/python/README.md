@@ -1,7 +1,7 @@
 # Python数据分析
 
 by [@梁斌](http://csusap.csu.edu.au/~bliang03/)<br>
-[课件下载](./python_data_analysis_slides.pdf)
+[课件下载](./python_data_analysis_slides.pdf)<br/>
 部分内容整理自互联网，感谢众多同学的分享。
 
 ## 1. 课程介绍
