@@ -1,4 +1,12 @@
-# Hadoop监控代码分析
+---
+layout: post
+title:  Hadoop监控代码分析
+date:   2016-11-11 17:08:00 +0800
+categories: Hadoop
+tag: Java 
+rank: 10
+author: kennethxian
+---
 
 ## 基本配置方法
 
@@ -356,6 +364,7 @@ synchronized void publishMetrics(MetricsBuffer buffer, boolean immediate) {
 
 遍历之前注册到MetricsSystem上的Sink（注册过程跟Source类似），调用他们的putMetrics方法，将buffer中的内容发送到指标的目的地。
 
-[1]: resources/metricsconf.png
-[2]: resources/metricsarch.png
-[3]: resources/metricscontrol.png
+[1]: {{ '/bigdata/hadoop/resources/metricsconf.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/hadoop/resources/metricsarch.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/hadoop/resources/metricscontrol.png' | prepend: site.baseurl  }}
+
