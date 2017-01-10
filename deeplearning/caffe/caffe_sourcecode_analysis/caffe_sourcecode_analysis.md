@@ -148,7 +148,7 @@ class Blob {
 
 Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而diff则存储BP的梯度。
 
-关于blob引入的头文件可以参考下面说明做理解：
+关于blob引入的头文件可以参考下面说明做理解：<br>
 \#include “caffe/common.hpp”单例化caffe类,并且封装了boost和cuda随<br>
 机数生成的函数,提供了统一接口。<br>
 \#include "caffe/proto/caffe.pb.h"上一节提到的头文件<br>
