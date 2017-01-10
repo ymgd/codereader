@@ -141,7 +141,7 @@ class Blob {
 其中`template <typename Dtype>`表示函数模板，Dtype可以表示int,double等数据类型。Blob是四维连续数组(4-D contiguous array, type = float32), 如果使用(n, k, h, w)表示的话，那么每一维的意思分别是：
 
 * n: number. 输入数据量，比如进行sgd时候的mini-batch大小。<br>
-* c: channel. 如果是图像数据的话可以认为是通道数量。<br>
+* k: channel. 如果是图像数据的话可以认为是通道数量。<br>
 * h,w: height, width. 如果是图像数据的话可以认为是图片的高度和宽度。<br>
 
 实际Blob在(n, k, h, w)位置的值物理位置为((n * K + k) * H + h) * W + w。
