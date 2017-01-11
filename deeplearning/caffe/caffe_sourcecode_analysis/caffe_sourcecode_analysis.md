@@ -141,16 +141,15 @@ class Blob {
 其中`template <typename Dtype>`表示函数模板，Dtype可以表示int,double等数据类型。Blob是四维连续数组(4-D contiguous array, type = float32), 如果使用(n, k, h, w)表示的话，那么每一维的意思分别是：
 
 * n: number. 输入数据量，比如进行sgd时候的mini-batch大小。<br>
-* c: channel. 如果是图像数据的话可以认为是通道数量。<br>
+* k: channel. 如果是图像数据的话可以认为是通道数量。<br>
 * h,w: height, width. 如果是图像数据的话可以认为是图片的高度和宽度。<br>
 
 实际Blob在(n, k, h, w)位置的值物理位置为((n * K + k) * H + h) * W + w。
 
 Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而diff则存储BP的梯度。
 
-关于blob引入的头文件可以参考下面说明做理解：
-\#include “caffe/common.hpp”单例化caffe类,并且封装了boost和cuda随<br>
-机数生成的函数,提供了统一接口。<br>
+关于blob引入的头文件可以参考下面说明做理解：<br>
+\#include “caffe/common.hpp”单例化caffe类,并且封装了boost和cuda随机数生成的函数,提供了统一接口。<br>
 \#include "caffe/proto/caffe.pb.h"上一节提到的头文件<br>
 \#include “caffe/syncedmem.hpp”主要是分配内存和释放内存的。而class SyncedMemory定义了内存分配管理和CPU与GPU之间同步的函数。Blob会使用SyncedMem自动决定什么时候去copy data以提高运行效率,通常情况是仅当gnu或cpu修改后有copy操作。<br>
 \#include “caffe/util/math_functions.hpp”封装了很多cblas矩阵运算,基本是矩阵和向量的处理函数。<br>
@@ -160,8 +159,8 @@ Blob内部有两个字段data和diff。Data表示流动数据(输出数据),而d
 * `Reshape()`可以改变一个blob的大小;<br>
 * `ReshapeLike()`为data和diff重新分配一块空间,大小和另一个blob的一样;<br>
 * `Num_axes()`返回的是blob的大小;<br>
-* `Count()`计算得到count=num*channels*height*width。<br>
-* `Offset()`可得到输入blob数据(n,c,h,w)的偏移量位置;<br>
+* `Count()`计算得到count=num\*channels\*height\*width。<br>
+* `Offset()`可得到输入blob数据(n,k,h,w)的偏移量位置;<br>
 * `CopyFrom()`从source拷贝数据,copy_diff来作为标志区分是拷贝data还是 diff。<br>
 * `FromProto()`从proto读数据进来,其实就是反序列化。 <br>
 * `ToProto()`把blob数据保存到proto中。 ShareDate()/ShareDiff()从other的blob复制data和diff的值;<br>
