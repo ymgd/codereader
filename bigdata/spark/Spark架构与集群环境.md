@@ -1,4 +1,11 @@
->>>>>>># 第1章 Spark架构与集群环境
+---
+layout: post
+title:  Spark架构与集群环境.md
+date:   2016-02-22 16:11:00 +0800
+categories: Spark
+tag: Scala
+rank: 10
+---
 
 &emsp;&emsp;本章首先介绍Spark大数据处理框架的基本概念。然后介绍Spark生态系统的主要组成部分，包括：Spark SQL、Spark Streaming、MLlib和GraphX。接着简要描述了Spark的架构，便于读者对Spark产生概要的认识和把握。最后描述了Spark集群环境搭建及Spark开发环境的构建方法。
 
@@ -700,24 +707,14 @@ cd /usr/local/spark/sbin
 
 
 
-[1]: resources/model/point.png
-
-[2]: resources/model/1-1Spark-Eco-BDAS.png
-
-[3]: resources/model/1-2Distributed.png
-
-[4]: resources/model/1-3SparkArchitecture.png
-
-[5]: resources/model/1-4SparkExecutingDAG.png
-
-[6]: resources/model/1-5JpsMaster.png
-
-[7]: resources/model/1-6JpsWorker.png
-
-[8]: resources/model/1-7SparkWebUI.png
-
-[9]: resources/model/1-8IntellijPlugin.png
-
-[10]: resources/model/1-9NewScalaProject.png
-
-[11]: resources/model/1-10ScalaIDE.png
+[1]: {{ '/bigdata/spark/resources/model/point.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/model/1-1Spark-Eco-BDAS.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/1-2Distributed.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/spark/resources/model/1-3SparkArchitecture.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/spark/resources/model/1-4SparkExecutingDAG.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/spark/resources/model/1-5JpsMaster.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/spark/resources/model/1-6JpsWorker.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/spark/resources/model/1-7SparkWebUI.png' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/spark/resources/model/1-8IntellijPlugin.png' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/spark/resources/model/1-9NewScalaProject.png' | prepend: site.baseurl  }}
+[11]: {{ '/bigdata/spark/resources/model/1-10ScalaIDE.png' | prepend: site.baseurl  }}
