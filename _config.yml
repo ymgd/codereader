@@ -4,7 +4,7 @@ email: yuanmagongdu@163.com
 author: ymgd
 url: https://ymgd.github.io/codereader
 github: https://github.com/ymgd/codereader
-baseurl: ""
+baseurl: "/codereader"
 description: ""
 meta_description: 源码分析的博客
 motto: I am reading codes
