@@ -1,0 +1,44 @@
+## src/backend/storage/buffer/
+
+### freelist.c
+
+routines for managing the buffer pool's **replacement strategy**.
+
+* include dependency graph for freelist.c
+
+  ![](http://doxygen.postgresql.org/freelist_8c__incl.png)
+
+
+
+| Data Structures |                                          |
+| --------------- | ---------------------------------------- |
+| struct          | [BufferStrategyControl](http://doxygen.postgresql.org/structBufferStrategyControl.html)   //the shared freelist control information, 其有一个spin lock，用于保护其中的其他变量（nextVictimBuffer用于指示下一个被替换的buffer，firstFreeBuffer和lastFreeBuffer用于指示未使用的buffer的头和尾；completePasses指示已经完成的sweep的圈数；numBufferAllocs指示自上次重置开始分配的buffer的数目，bgwprocno指示有新的活动时被通知的后台工作进程的编号，int类型）。 |
+| struct          | [BufferAccessStrategyData](http://doxygen.postgresql.org/structBufferAccessStrategyData.html)  //目前为止唯一一种BufferAccessStrategy对象，用于标识管理共享缓冲区环的重用的私有状态变量。 btype标识策略类型，ring_size指示在buffers[]数组中的元素数目。current指示环中当前的slot，它是最近被GetBufferFromRing返回的。current_was_in_ring用户指示被StrategyGetBuffer返回的缓冲区是否已经存在在环中。buffers[FLEXIBLE_ARRAY_MEMBER]指示缓冲区数目的数组。 |
+
+| Macros  |                                          |
+| ------- | ---------------------------------------- |
+| #define | [INT_ACCESS_ONCE](http://doxygen.postgresql.org/freelist_8c.html#aa27b472235c88ab973d09313a85e351c)(var)   ((int)(*((volatile int *)&(var))))   //用于获取bgwprocno的宏，只执行一次。 |
+
+| Typedefs                                 |                                          |
+| ---------------------------------------- | ---------------------------------------- |
+| [typedef](http://doxygen.postgresql.org/mingwcompat_8c.html#ad87859e2d4486b3c76fa7783ab3d2ccc) struct [BufferAccessStrategyData](http://doxygen.postgresql.org/structBufferAccessStrategyData.html) | [BufferAccessStrategyData](http://doxygen.postgresql.org/freelist_8c.html#a4f7a1d827eb6feec831284295c769b8e) |
+
+| Functions                                |                                          |
+| ---------------------------------------- | ---------------------------------------- |
+| static [BufferDesc](http://doxygen.postgresql.org/structBufferDesc.html) * | [GetBufferFromRing](http://doxygen.postgresql.org/freelist_8c.html#af97f0137b5d159df32a0587bb6d21dfe) ([BufferAccessStrategy](http://doxygen.postgresql.org/buf_8h.html#aa259999f7bb734ea3bb310d66d1f6f1c) strategy, [uint32](http://doxygen.postgresql.org/c_8h.html#a1134b580f8da4de94ca6b1de4d37975e) *buf_state)  // 从ring返回一个buffer，当ring为空时返回NULL。                    **bufhdr** spin lock is held on the _returned buffer_.  the local variable **(unsigned int) local_buf_state** 用于避免重复引用。                          **1**. 前进一个slot，如果超过了ring_size，将strategy->current置为0.   **2**.获取current buffer的bufnum，然后根据bufnum获取bufdescriptor。 **3**. 加锁，检查该buf是否可用（unpinned by others  and the usage_count = 0 or 1.）若果可用，将current_was_in_ring 置为true 并返回该buf.  **4**。 如果当前不可用，返回空（这将通知caller分配用常规的分配策略分配一个新的buffer，然后通过AddBufferToRing将新allocate的buf替换掉ring中的某个element(**current element**.)）。 |
+| static void                              | [AddBufferToRing](http://doxygen.postgresql.org/freelist_8c.html#a8584c63821c8750d3f5f90d1b1c60f7d) ([BufferAccessStrategy](http://doxygen.postgresql.org/buf_8h.html#aa259999f7bb734ea3bb310d66d1f6f1c) strategy, [BufferDesc](http://doxygen.postgresql.org/structBufferDesc.html) *[buf](http://doxygen.postgresql.org/pg__test__fsync_8c.html#ac14417684334d01b4e1e807a19d92816))   //**Add a buffer to the buffer ring.**          获取buf的下一个bufdesc，将current置为buf+1. |
+| static [uint32](http://doxygen.postgresql.org/c_8h.html#a1134b580f8da4de94ca6b1de4d37975e) | [ClockSweepTick](http://doxygen.postgresql.org/freelist_8c.html#a6aa2c55917e93afda5ca67bb8f590179) (void)   // a helper function for StrategyGetBuffer().      自动将buffer的hand向前移动一个。然后%NBuffer，如果victim大于或等于NBuffer，在余0的时候，将completepasses+1，这一过程需要使用spinlock     。完成之后，返回victim。 |
+| [BufferDesc](http://doxygen.postgresql.org/structBufferDesc.html) * | [StrategyGetBuffer](http://doxygen.postgresql.org/freelist_8c.html#a809c8062ec1615e6077618e19aa641c6) ([BufferAccessStrategy](http://doxygen.postgresql.org/buf_8h.html#aa259999f7bb734ea3bb310d66d1f6f1c) strategy, [uint32](http://doxygen.postgresql.org/c_8h.html#a1134b580f8da4de94ca6b1de4d37975e) *buf_state)    //This funcion is called by the bufmgr to get the next candidate buffer to use in BufferAlloc().其唯一硬性要求是，被选中的buffer当前不能被任何进程pinned。大致的运行逻辑是：**1**. 首先判断能否根据strategy选择一个buffer，如果不行： **2**. 从freelist中选择一个（firstFreeBuffer），添加到strategy的ring buffers[]中。如果free list 中没有：**3**. 执行clock sweep算法，扫描一遍所有的buffer，加锁，如果能找到可用的buffer（buffer is not pinned or has no nonzero usage count）,将其加入strategy中的ring buffers[] 中，**4**. 如果sweep一遍还没有找到，报错“no unpinned buffers available", 并unlockBufHdr（buf, local_buf_state）,可见该锁是private的。 |
+| void                                     | [StrategyFreeBuffer](http://doxygen.postgresql.org/freelist_8c.html#aeef7d6188c8a98a4d3f28072c28283c9) ([BufferDesc](http://doxygen.postgresql.org/structBufferDesc.html) *[buf](http://doxygen.postgresql.org/pg__test__fsync_8c.html#ac14417684334d01b4e1e807a19d92816))   //**Put a buffer on the freelist.**    the _freeNext_ field is either the **index of the next freelist entry** or **-2(FREENEXT_NOT_IN_LIST)**   这一过程需要使用SpinLock by：  SpinLockAcquir(&StrategyControl -> buffer_strategy_lock); |
+| int                                      | [StrategySyncStart](http://doxygen.postgresql.org/freelist_8c.html#a24f84a1e1ff55aa9c4bef3d3ccc17d99) ([uint32](http://doxygen.postgresql.org/c_8h.html#a1134b580f8da4de94ca6b1de4d37975e) *complete_passes, [uint32](http://doxygen.postgresql.org/c_8h.html#a1134b580f8da4de94ca6b1de4d37975e) *num_buf_alloc)   //tell the **BufferSync** where to start syncing.  其实就是用于completePasses和num_buf_alloc两个变量随buffer的变动而同步更新。使用SpinLock。 |
+| void                                     | [StrategyNotifyBgWriter](http://doxygen.postgresql.org/freelist_8c.html#aabbd7d3891afc1d8531c3871d08d4b28) (int bgwprocno)   //用于设置或清除allocation notification的触发器（latch）。pass NULL or the bgwriterlatch to Strategy->gbwprocno. |
+| [Size](http://doxygen.postgresql.org/c_8h.html#af9ecec2d692138fab9167164a457cbd4) | [StrategyShmemSize](http://doxygen.postgresql.org/freelist_8c.html#adbe5f0df495ebbb85647bbcbd56cdd19) (void)  //用于估计与freelist有关的数据结构占用的shared memory的大小，返回Size类型的变量。  这其中包括：1. lookup hash table 的大小 2. replacement strategy control block的大小。 |
+| void                                     | [StrategyInitialize](http://doxygen.postgresql.org/freelist_8c.html#a7b80da0e58605d216e893cca1163c0ef) ([bool](http://doxygen.postgresql.org/c_8h.html#ad5c9d4ba3dc37783a528b0925dc981a0) [init](http://doxygen.postgresql.org/pgbench_8c.html#aecb29b724899d75f7c73d81e8ed7d8bc))   //用于初始化buffer cache替换策略（replacement strategy）。1. 初始化shared buffer hash table： InitBufTable(NBuffers + NUM_BUFFER_PARTITIONS)  2.获取or新建（暂时为空的）shared strategy control block。  3. 如果没有找到strategy control， 手动设置其各个属性的值。只在postmaster中做一次该项工作。 |
+| [BufferAccessStrategy](http://doxygen.postgresql.org/buf_8h.html#aa259999f7bb734ea3bb310d66d1f6f1c) | [GetAccessStrategy](http://doxygen.postgresql.org/freelist_8c.html#a4daaa385db8d1cca3364f2c4054b4c1e) ([BufferAccessStrategyType](http://doxygen.postgresql.org/bufmgr_8h.html#a035a7396b5e9fce5365c7b1deef3fea5) btype)  // 根据btype 创建 a **BufferAccessStrategy**类型的object、这些BufferAccessStrategyType包括：1. BAS_NORMAL: normal random access. 2. BAS_BULKREAD, large read-only scan. 3. BAS_BULKWRITE: large multi-block write 4. BAS_VACUUM: vacuum. |
+| void                                     | [FreeAccessStrategy](http://doxygen.postgresql.org/freelist_8c.html#a9ca4f85a6a0d26002f35ed3a4d2d600c) ([BufferAccessStrategy](http://doxygen.postgresql.org/buf_8h.html#aa259999f7bb734ea3bb310d66d1f6f1c) strategy)  //释放一个BufferAccessStrategy对象。 |
+| bool                                     | [StrategyRejectBuffer](http://doxygen.postgresql.org/freelist_8c.html#a8928fe17b4e6c8b17ef24432c63c3fcb) ([BufferAccessStrategy](http://doxygen.postgresql.org/buf_8h.html#aa259999f7bb734ea3bb310d66d1f6f1c) strategy, [BufferDesc](http://doxygen.postgresql.org/structBufferDesc.html) *[buf](http://doxygen.postgresql.org/pg__test__fsync_8c.html#ac14417684334d01b4e1e807a19d92816))  //检查某个buffer是否已经被修改，consider 拒绝 a **dirty** buffer.  1. 当使用非默认的策略时，buffermgr调用这个函数，将dirty的current buffer置为**invalidBuffer（这是一个int值0）** 。 |
+
+| Variables                                |                                          |
+| ---------------------------------------- | ---------------------------------------- |
+| static [BufferStrategyControl](http://doxygen.postgresql.org/structBufferStrategyControl.html) * | [StrategyControl](http://doxygen.postgresql.org/freelist_8c.html#a5618971894c84d99ddd8cc1b918b5601) = [NULL](http://doxygen.postgresql.org/c_8h.html#a070d2ce7b6bb7e5c05602aa8c308d0c4)   // the pointer to _shared_state_ |
+

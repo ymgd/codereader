@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title></title>
+
+	<link rel="shortcut icon" href="/styles/images/favicon.jpg">
+	<link rel="icon" href="/styles/images/favicon.jpg">
+
+	<link rel="stylesheet" href="/styles/css/index.css">
+	<link rel="stylesheet" href="/styles/css/fontawesome/css/font-awesome.min.css">
+	<link rel="canonical" href="/">
+	<link rel="alternate" type="application/rss+xml" title="源码分析" href="/feed.xml">
+	
+	<meta name="description" content="源码分析的博客">
+
+	<script src="/styles/js/jquery.min.js"></script>
+	<!--[if lt IE 9]>
+    	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  	<![endif]-->
+               
+  	<style type="text/css">
+	  	.docs-content{
+	  		margin-bottom: 10px;
+	  	}
+  	</style>
+</head>
+
+
+  <body class="index">
+
+    <header class="navbar navbar-inverse navbar-fixed-top docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="https://ymgd.github.io/codereader/" class="navbar-brand">
+        <img src="/styles/images/logo.jpg">
+      </a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">    
+        <li>
+          <a href="/">时间流</a>
+        </li>
+        <li>
+          <a href="/categories/">按项目分</a>
+        </li>
+        <li>
+          <a href="/tag">按语言分</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">关于<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a rel="nofollow" target="_blank" href="https://github.com/ymgd/codereader">Github</a></li>
+            <li><a href="/feed.xml">RSS订阅</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <div class="docs-header" id="content">
+  <div class="container">
+  	
+	    <h3>源码分析</h3>
+	    <p></p>
+    
+  </div>
+</div>
+
+    
+
+     <div class="container docs-container">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="sidebar hidden-print" role="complementary">
+            <div id="navigation">
+              <h1>目录</h1>
+              <ul class="nav sidenav">
+
+                
+                  
+                  
+                  
+                  
+
+                  
+                    <li><a href="#year_2016">2016</a>
+                      <ul class="nav">
+                        <li><a href="#month_2016_November">November</a></li>
+                  
+
+                  
+                        
+                      
+                          <li><a href="#month_2016_October">October</a></li>
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  
+                        </ul>
+                      </li>
+                  
+                
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9" role="main">
+          <div class="panel docs-content">
+            <div class="wrapper">
+              <div class="home">
+                
+                  
+                  
+                  
+                  
+
+                  
+                    <h2 id="year_2016">2016</h2>
+                    <h3 id="month_2016_November">November</h3>
+                    <ul>
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>November 11, 2016</span> &raquo; <a href="/2016/11/11/Hadoop%E7%9B%91%E6%8E%A7%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">Hadoop监控代码分析</a></li>
+                  </ol>
+                  
+                        
+                      
+                        </ul>
+                        <h3 id="month_2016_October">October</h3>
+                        <ul>
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 26, 2016</span> &raquo; <a href="/2016/10/26/python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90README/">Python数据分析</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 21, 2016</span> &raquo; <a href="/2016/10/21/Spark%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B/">Spark编程模型</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 21, 2016</span> &raquo; <a href="/2016/10/21/SparkREADME/">Spark项目说明</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 20, 2016</span> &raquo; <a href="/2016/10/20/caffe_sourcecode_analysis/">Caffe源码导读</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 20, 2016</span> &raquo; <a href="/2016/10/20/CaffeREADME/">Caffe项目说明</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/Hadoop%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BD%BD%E5%85%A5Ecplise%E6%96%B9%E6%B3%95/">Hadoop代码结构及载入Ecplise方法</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/%E7%8E%A9%E8%BD%ACFlume%E4%B9%8B%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90/">玩转Flume之核心架构深入解析</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/Flume-NG%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84%E5%8F%8A%E9%85%8D%E7%BD%AE%E8%BD%BD%E5%85%A5%E5%88%86%E6%9E%90/">Flume-NG源码分析-整体结构及配置载入分析</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/%E7%94%B1%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E4%BA%A7%E7%94%9F%E7%9A%84%E5%AE%9E%E6%88%98%E5%88%86%E6%9E%90/">由多线程内存溢出产生的实战分析</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/%E5%B0%8F%E5%91%BD%E4%BB%A4%E4%BF%9D%E8%AF%81%E5%A4%A7%E6%80%A7%E8%83%BD/">小命令保证大性能</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/%E7%A9%B6%E7%AB%9F%E6%80%8E%E6%A0%B7%E5%86%99%E4%BB%A3%E7%A0%81%E6%89%8D%E7%AE%97%E6%98%AF%E5%A5%BD%E4%BB%A3%E7%A0%81/">究竟怎样写代码才算是好代码</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 17, 2016</span> &raquo; <a href="/2016/10/17/%E4%BB%8E0%E5%88%B01%E8%B5%B7%E6%AD%A5-%E8%B7%9F%E6%88%91%E8%BF%9B%E5%85%A5%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E7%9A%84%E5%A5%87%E5%A6%99%E4%B8%96%E7%95%8C/">从0到1起步-跟我进入堆外内存的奇妙世界</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 16, 2016</span> &raquo; <a href="/2016/10/16/Hadoop%E8%AE%A4%E8%AF%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">Hadoop认证代码分析</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 13, 2016</span> &raquo; <a href="/2016/10/13/FlumeREADME/">Flume项目说明</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 13, 2016</span> &raquo; <a href="/2016/10/13/%E9%A1%B9%E7%9B%AE%E8%AF%B4%E6%98%8E/">源码分析项目说明</a></li>
+                  </ol>
+                  
+                        
+                      
+                    
+                  
+                
+                  
+                  
+                  
+                  
+
+                  
+
+                  <ol class="breadcrumb">
+                   <li><span>October 13, 2016</span> &raquo; <a href="/2016/10/13/HadoopREADME/">Hadoop项目说明</a></li>
+                  </ol>
+                  
+                    </ul>
+                  
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <footer class="footer" role="contentinfo">
+	<div class="container">
+		<p class="copyright">Copyright &copy; 2014-2018 <a href=""><code>ymgd</code></a>.</p>
+		<p>Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme from <a href="http://lesscss.cn/">Less</a></p>
+	</div>
+</footer>
+
+<script src="/styles/js/jquery.min.js"></script>
+<script src="/styles/js/bootstrap.min.js"></script>
+<script src="/styles/js/holder.min.js"></script>
+<script src="/styles/js/application.js"></script>
+<script src="/styles/js/lessismore.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hadoop认证代码分析</title>
+
+	<link rel="shortcut icon" href="/styles/images/favicon.jpg">
+	<link rel="icon" href="/styles/images/favicon.jpg">
+
+	<link rel="stylesheet" href="/styles/css/index.css">
+	<link rel="stylesheet" href="/styles/css/fontawesome/css/font-awesome.min.css">
+	<link rel="canonical" href="/bigdata/hadoop/Hadoop%E8%AE%A4%E8%AF%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">
+	<link rel="alternate" type="application/rss+xml" title="源码分析" href="/feed.xml">
+	
+	<meta name="description" content="源码分析的博客">
+
+	<script src="/styles/js/jquery.min.js"></script>
+	<!--[if lt IE 9]>
+    	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  	<![endif]-->
+               
+  	<style type="text/css">
+	  	.docs-content{
+	  		margin-bottom: 10px;
+	  	}
+  	</style>
+</head>
+
+
+  <body class="index">
+
+    <header class="navbar navbar-inverse navbar-fixed-top docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="https://ymgd.github.io/codereader/" class="navbar-brand">
+        <img src="/styles/images/logo.jpg">
+      </a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">    
+        <li>
+          <a href="/">时间流</a>
+        </li>
+        <li>
+          <a href="/categories/">按项目分</a>
+        </li>
+        <li>
+          <a href="/tag">按语言分</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">关于<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a rel="nofollow" target="_blank" href="https://github.com/ymgd/codereader">Github</a></li>
+            <li><a href="/feed.xml">RSS订阅</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <div class="docs-header" id="content">
+  <div class="container">
+  	
+  		<!--
+		    <h1>Hadoop认证代码分析</h1>
+		    <p>Post on Oct 16, 2016 by <a href="/about">ymgd</a></p>
+		-->
+		    <h3>I am reading codes</h3>
+    
+  </div>
+</div>
+
+    
+      
+<div class="banner">
+  <div class="container">
+  	
+    	<a href="/categories/#Hadoop-ref">Hadoop</a>	/
+    	<a href="/tag/#Java-ref">Java</a>
+    
+  </div>
+</div>
+
+    
+
+    <div class="container docs-container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sidebar hidden-print" role="complementary">
+        <div id="navigation">
+  <h1>目录</h1>
+  <ul class="nav sidenav">
+<!--
+    
+      
+      
+      
+      
+
+      
+        <li><a href="#year_2016">2016</a>
+          <ul class="nav">
+            <li><a href="#month_2016_November">November</a></li>
+      
+
+      
+            
+          
+              <li><a href="#month_2016_October">October</a></li>
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            </ul>
+          </li>
+      
+    
+-->
+  </ul>
+</div> 
+      </div>
+    </div>
+    <div class="col-md-9" role="main">
+      <div class="panel docs-content">
+        <div class="wrapper">
+            <header class="post-header">
+              <h1 class="post-title">Hadoop认证代码分析</h1>
+              <!--
+                <p class="post-meta">Oct 16, 2016 • kennethxian</p>
+              -->
+              
+                <div class="meta">Posted on <span class="postdate">Oct 16, 2016</span> By <a target="_blank" href="https://github.com/kennethxian">kennethxian</a></div>
+              
+              <br />
+            </header>
+            <article class="post-content">
+              <p>Hadoop作为分布式系统，服务分布于多台服务器之间，提供多用户的访问机制，却有着极其简单的认证实现逻辑。</p>
+
+<p>JAAS（Java Authentication Authorization Service）完整的提供了一个认证鉴权的框架，在Hadoop这个看似庞大的架构当中，借助这一体系，在一个单独的Java类中，实现了认证的绝大部分逻辑。</p>
+
+<p>本文主要讲述Hadoop中的认证实现方法（鉴权暂时不谈）。</p>
+
+<h2 id="jaas">一、JAAS</h2>
+
+<h3 id="section">1、什么是认证鉴权</h3>
+
+<p>认证（Authentication），用于鉴别“张三即是张三”，识别用户的合法性。</p>
+
+<p>鉴权（Authorization），用于鉴别“张三能不能干这事情”，识别用户操作的权限。</p>
+
+<h3 id="jaas-1">2、JAAS架构及使用方法</h3>
+
+<blockquote>
+  <p>以下关于JAAS，参考自：<a href="http://www.cnblogs.com/allenny/archive/2006/02/27/338544.html">http://www.cnblogs.com/allenny/archive/2006/02/27/338544.html</a>。</p>
+</blockquote>
+
+<h4 id="jaas-2">JAAS的主要实现架构，如下图：</h4>
+
+<p><img src="/bigdata/hadoop/resources/jaasarch.gif" alt="" /></p>
+
+<p>图中从上到下各层次：</p>
+
+<p>Application：JAAS使用者使用Java语言编写的应用。</p>
+
+<p>LoginContext：可以看做JAAS为上层Java应用提供的住入口，上层应用通过调用LoginContext提供的方法，与底层的认证支撑体系（账号库等等）对接。</p>
+
+<p>xxxLoginModule：JAAS将底层不同的实际账号认证服务进行抽象，比如RDBMS抽象成RdbmsLoginModule等等。有了LogingModule的抽象能力，让JAAS的使用者可以根据自己的需求选择实际的账号存储体系及账号认证的服务架构，只需要以相对应的LoginModule与上层（LoginContext）相对接上就可以了。</p>
+
+<p>各类实际认证服务：包括LDAP、RDBMS等等，用户也可以自定义Service。</p>
+
+<h4 id="jaas-3">JAAS的主要使用方法</h4>
+
+<p>Java应用使用JAAS的方法为：</p>
+
+<p><img src="/bigdata/hadoop/resources/jaasusage.gif" alt="" /></p>
+
+<p>整个调用就两步：</p>
+
+<ol>
+  <li>
+    <p>创建LoginContext实例lc。</p>
+  </li>
+  <li>
+    <p>调用lc的login方法实现认证。（认证失败时会抛出LoginException)</p>
+  </li>
+</ol>
+
+<p>需要留意的是，在创建LoginContext实例的时候，传入的”Example”参数，用于定位在配置文件jaas.config中所配好的Login Entry。寻找到名为Example的Login Entry所对应的配置项，获知其所使用的LoginModule为RdbmsLoginModule以及相关的配置参数（其实，就是使用mysql数据库中的信息作为认证依据）。一个LoginContext在认证过程中可以使用多个Login Entry，实现多LoginModule登录的需求。</p>
+
+<h4 id="section-1">认证的实际流程</h4>
+
+<p>Java应用在调用LoginContext的login方法之后，JAAS实际以预定义的顺序调用LoginModule的若干方法最终完成整个认证的流程。在LoginModule的这些方法中，调用实际的认证服务，就将认证（登录）的流程与实际的认证服务关联起来了。</p>
+
+<p>LoginModule的主要方法：</p>
+
+<ul>
+  <li>initialize () ：创建LoginModule实例时会被构造函数调用。</li>
+  <li>login ()：进行验证，调用LoginContext的login方法之后，逐个调用所关联的每个LoginModule的login方法。</li>
+  <li>commit ()：当LgoninContext对象接受所有LoginModule对象传回的结果后将调用该方法。该方法将Principal对象和凭证赋给Subject对象。</li>
+  <li>abort () 当任何一个LoginModule对象验证失败时都会调用该方法。此时没有任何Principal对象或凭证关联到Subject对象上。</li>
+  <li>logout () 删除与Subject对象关联的Principal对象和凭证。</li>
+</ul>
+
+<p>对于一个LoginModule来说，在用户调用LoginContext的login方法之后，实际经历的主要方法调用流程就是：</p>
+
+<ul>
+  <li>成功时调用序列：initialize-&gt;login-&gt;commit</li>
+  <li>失败时调用序列：initialize-&gt;login-&gt;abort</li>
+</ul>
+
+<h4 id="section-2">认证过程中的信息存储</h4>
+
+<p>在认证的过程当中，当用户进行认证登录之后，其信息需要存储于某个对象当中，以备之后的操作基于该对象提供的方法进行，对象自身携带的信息可以充分说明对象是经过某用户成功认证之后生成的。</p>
+
+<p>Java中，该对象为Subject类的实例，Subject中所包含信息：</p>
+
+<ul>
+  <li>Principal（可以简单类比为好理解的username，不严谨）</li>
+  <li>Credentials(public/private) （可简单类比为password，不严谨）</li>
+</ul>
+
+<p>Subject的中关于对象属性的这些信息，在LoginModule的commit方法中会被赋上正确的值。</p>
+
+<h2 id="hadop">二、Hadop认证主要实现类</h2>
+
+<p>Hadoop认证的实现类为org.apache.hadoop.security.UserGroupInformation（<a href="https://github.com/apache/hadoop/blob/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/UserGroupInformation.java">代码链接</a>）。</p>
+
+<p>从上面对JAAS的简述很容易想象，Hadoop为了定义自己的认证机制，实际就是实现了一个自己的LoginModule，在Java应用调用LoginContext的login方法之后，触发Hadoop自定义的LoginModule中的逻辑。</p>
+
+<h4 id="hadoopconfiguration">HadoopConfiguration</h4>
+
+<p>先看看UserGroupInformation的内部类HadoopConfiguration中有这样一段定义：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AppConfigurationEntry</span><span class="o">[]</span> <span class="n">SIMPLE_CONF</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AppConfigurationEntry</span><span class="o">[]{</span><span class="n">OS_SPECIFIC_LOGIN</span><span class="o">,</span> <span class="n">HADOOP_LOGIN</span><span class="o">};</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AppConfigurationEntry</span> <span class="n">OS_SPECIFIC_LOGIN</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="nf">AppConfigurationEntry</span><span class="o">(</span><span class="n">OS_LOGIN_MODULE_NAME</span><span class="o">,</span>
+                                <span class="n">LoginModuleControlFlag</span><span class="o">.</span><span class="na">REQUIRED</span><span class="o">,</span>
+                                <span class="n">BASIC_JAAS_OPTIONS</span><span class="o">);</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AppConfigurationEntry</span> <span class="n">HADOOP_LOGIN</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="nf">AppConfigurationEntry</span><span class="o">(</span><span class="n">HadoopLoginModule</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+                                <span class="n">LoginModuleControlFlag</span><span class="o">.</span><span class="na">REQUIRED</span><span class="o">,</span>
+                                <span class="n">BASIC_JAAS_OPTIONS</span><span class="o">);</span>
+</code></pre>
+</div>
+
+<p>这里定义了AppConfigurationEntry，实际就相当于前面示例中说的Example所对应的配置文件中的LoginEntry。在Hadoop中，不再使用文件方式定义LoginEntry，而是使用的代码实现的方式。</p>
+
+<p>在SIMPLE_CONF这个AppConfigurationEntry的数组中，包含了OS_SPECIFIC_LOGIN跟HADOOP_LOGIN两个LoginEntry，对于比如HADOOP_LOGIN这样的LoginEntry，其中定义了它所关联的LoginModule是HadoopLoginModule。（实际逻辑执行时，代码通过读取hadoop的配置项hadoop.security.authentication获取当前使用的认证方法，该配置项默认为simple，于是会映射到SIMPLE_CONF这一入口，这段逻辑我们可以自己再仔细推敲）</p>
+
+<h4 id="hadooploginmodule">HadoopLoginModule</h4>
+
+<p>上面提到的，由LoginEntry包含的HadoopLoginModule，也是UserGroupInformation中的内部类：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">HadoopLoginModule</span> <span class="kd">implements</span> <span class="n">LoginModule</span> 
+</code></pre>
+</div>
+
+<p>它就是JAAS中LoginModule的扩展类。</p>
+
+<p>上面提到过，在一次登录过程中，会触发LoginModule的login、commit等方法，我们逐个看看HadoopLoginModule中都做了什么。</p>
+
+<p>1、 initialize</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">Subject</span> <span class="n">subject</span><span class="o">,</span> <span class="n">CallbackHandler</span> <span class="n">callbackHandler</span><span class="o">,</span>
+                       <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="o">?&gt;</span> <span class="n">sharedState</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="o">?&gt;</span> <span class="n">options</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">subject</span> <span class="o">=</span> <span class="n">subject</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>HadoopLoginModule在这里并没有做什么，将初始化时传进来的一个Subject对象的引用赋给了成员属性subject，后面在登录过程中，对subject的修改，会影响到调用initialize者所传进来的找个subject对象（最终找个对象中的值会被使用者获取到）。</p>
+
+<p>2、login及logout</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">login</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">LoginException</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"hadoop login"</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">logout</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">LoginException</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"hadoop logout"</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">abort</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">LoginException</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>HadoopLoginModule在login被调用时什么都没做，把事情留给后面的方法。
+logout及abort也是如此。</p>
+
+<p>一般的交互式应用，会在LoginModule的login方法中实现给用户弹窗请求输入用户名密码的逻辑，Hadoop作为一个后台批处理系统，使用认证服务的不仅仅是普通的人类用户，其中的一些服务实例比如datanode等，也会使用login，因此没有使用交互式等登录方法。</p>
+
+<p>3、commit</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">commit</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">LoginException</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"hadoop login commit"</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="c1">// subject对象中已经有了用户信息（登录过）</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="n">subject</span><span class="o">.</span><span class="na">getPrincipals</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"using existing subject:"</span><span class="o">+</span><span class="n">subject</span><span class="o">.</span><span class="na">getPrincipals</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="n">Principal</span> <span class="n">user</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="c1">// 如果使用Kerberos认证方式</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">isAuthenticationMethodEnabled</span><span class="o">(</span><span class="n">AuthenticationMethod</span><span class="o">.</span><span class="na">KERBEROS</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">getCanonicalUser</span><span class="o">(</span><span class="n">KerberosPrincipal</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"using kerberos user:"</span><span class="o">+</span><span class="n">user</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//如果没有用Kerberos，读取环境变量HADOOP_USER_NAME作为用户名</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="n">isSecurityEnabled</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">envUser</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getenv</span><span class="o">(</span><span class="n">HADOOP_USER_NAME</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">envUser</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">envUser</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="n">HADOOP_USER_NAME</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">envUser</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span><span class="n">envUser</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="c1">//HADOOP_USER_NAME没有设置，使用当前执行出的操作系统用户名作为hadoop操作的用户名</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">getCanonicalUser</span><span class="o">(</span><span class="n">OS_PRINCIPAL_CLASS</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"using local user:"</span><span class="o">+</span><span class="n">user</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//找到用户名，将其添加进subject对象当中</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Using user: \""</span> <span class="o">+</span> <span class="n">user</span> <span class="o">+</span> <span class="s">"\" with name "</span> <span class="o">+</span> <span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="n">User</span> <span class="n">userEntry</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">userEntry</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="o">(</span><span class="n">LoginException</span><span class="o">)(</span><span class="k">new</span> <span class="n">LoginException</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">()).</span><span class="na">initCause</span><span class="o">(</span><span class="n">e</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"User entry: \""</span> <span class="o">+</span> <span class="n">userEntry</span><span class="o">.</span><span class="na">toString</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\""</span> <span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">subject</span><span class="o">.</span><span class="na">getPrincipals</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="n">userEntry</span><span class="o">);</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="c1">//找不到定义用户名，抛异常</span>
+  <span class="n">LOG</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Can't find user in "</span> <span class="o">+</span> <span class="n">subject</span><span class="o">);</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nf">LoginException</span><span class="o">(</span><span class="s">"Can't find user name"</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>commit方法是HadoopLoginModule的认证流程所在的主要地方，整个代码流程还是比较好理解的，逐一检测每一种可能的认证方式，一旦某种方式获取到用户名之后，将user变量设为用户名（后面的方式会由于if (user == null) 判断为false而被跳过）。最后在方法的最后，将用户信息设置到subject当中。</p>
+
+<p>我们可以做个简单的尝试来检验我们阅读代码之后的结论，比如这个过程中，hadoop会判断HADOOP_USER_NAME是否定义，来确定当前的用户名，我们在实际的hadoop环境中做如下操作：</p>
+
+<p><img src="/bigdata/hadoop/resources/username.png" alt="" /></p>
+
+<p>可以看到，当把HADOOP_USER_NAME设置为用户名chinahadoop之后，再进行后续的操作，用户名都会是chinahadoop。</p>
+
+<h2 id="hadoop">三、Hadoop认证机制触发流程</h2>
+
+<p>以上描述了Hadoop认证机制的基本原理。下面具体屡一下Hadoop中一个用户登录（认证）操作流程是如何的。</p>
+
+<p>从一个使用场景开始：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">FileSystem</span> <span class="nf">get</span><span class="o">(</span><span class="kd">final</span> <span class="n">URI</span> <span class="n">uri</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Configuration</span> <span class="n">conf</span><span class="o">,</span>
+      <span class="kd">final</span> <span class="n">String</span> <span class="n">user</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+  <span class="n">String</span> <span class="n">ticketCachePath</span> <span class="o">=</span>
+    <span class="n">conf</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CommonConfigurationKeys</span><span class="o">.</span><span class="na">KERBEROS_TICKET_CACHE_PATH</span><span class="o">);</span>
+  <span class="n">UserGroupInformation</span> <span class="n">ugi</span> <span class="o">=</span>
+      <span class="n">UserGroupInformation</span><span class="o">.</span><span class="na">getBestUGI</span><span class="o">(</span><span class="n">ticketCachePath</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">ugi</span><span class="o">.</span><span class="na">doAs</span><span class="o">(</span><span class="k">new</span> <span class="n">PrivilegedExceptionAction</span><span class="o">&lt;</span><span class="n">FileSystem</span><span class="o">&gt;()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">FileSystem</span> <span class="nf">run</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">});</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>这是org.apache.hadoop.fs.FileSystem中的get方法，用户通过调用该方法获取FileSystem实例，然后操作hdfs文件系统。</p>
+
+<p>因为hadoop分布式文件系统（hdfs）中对于目录的访问需要根据用户进行权限区分（类似于Linux文件系统），所以在这个get方法的实现中，需要具备区分用户的能力。</p>
+
+<p>方法中的UserGroupInformation.getBestUGI调用便是这样一个入口，根据当前的配置情况，该方法最终返回的UserGroupInformation类对象，包含了当前用户的信息。</p>
+
+<p>继续看UserGroupInformation.getBestUGI实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">UserGroupInformation</span> <span class="nf">getBestUGI</span><span class="o">(</span>
+    <span class="n">String</span> <span class="n">ticketCachePath</span><span class="o">,</span> <span class="n">String</span> <span class="n">user</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">ticketCachePath</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">getUGIFromTicketCache</span><span class="o">(</span><span class="n">ticketCachePath</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">getCurrentUser</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">createRemoteUser</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+  <span class="o">}</span>    
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>代码中基于性能（cache）、功能完整性（支持多种认证方式）等考虑，会有多种分支处理，这里我们研究我们最主要的关注点。</p>
+
+<p>getBestUGI方法中，当用户未认证时，if (user == null) 条件被满足 ，调用getCurrentUser。继续看看getCurrentUser的实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">static</span> <span class="n">UserGroupInformation</span> <span class="nf">getCurrentUser</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+  <span class="n">AccessControlContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">AccessController</span><span class="o">.</span><span class="na">getContext</span><span class="o">();</span>
+  <span class="n">Subject</span> <span class="n">subject</span> <span class="o">=</span> <span class="n">Subject</span><span class="o">.</span><span class="na">getSubject</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">subject</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">subject</span><span class="o">.</span><span class="na">getPrincipals</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">getLoginUser</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">UserGroupInformation</span><span class="o">(</span><span class="n">subject</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>用户未认证之前，subject为null（如前面内容描述，subject在LoginModule的commit中被设置好），调用getLoginUser。getLoginUser代码：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">static</span> <span class="n">UserGroupInformation</span> <span class="nf">getLoginUser</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">loginUser</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">loginUserFromSubject</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="n">loginUser</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>loginUser为空，继续调用loginUserFromSubject：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@InterfaceAudience</span><span class="o">.</span><span class="na">Public</span>
+<span class="nd">@InterfaceStability</span><span class="o">.</span><span class="na">Evolving</span>
+<span class="kd">public</span> <span class="kd">synchronized</span> 
+<span class="kd">static</span> <span class="kt">void</span> <span class="nf">loginUserFromSubject</span><span class="o">(</span><span class="n">Subject</span> <span class="n">subject</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+  <span class="n">ensureInitialized</span><span class="o">();</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">subject</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">subject</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Subject</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">// 创建LoginContext，传入的HadoopConfiguration对象会读入hadoop配置，如果配置</span>
+    <span class="c1">// 项hadoop.security.authentication的值为simple，会走入我们前面描述的</span>
+    <span class="c1">// SimpleEntry逻辑。（其他配置项时也会获取相应LogingEntry，我们这里以simple为</span>
+    <span class="c1">// 研究示例。</span>
+    <span class="n">LoginContext</span> <span class="n">login</span> <span class="o">=</span>
+        <span class="n">newLoginContext</span><span class="o">(</span><span class="n">authenticationMethod</span><span class="o">.</span><span class="na">getLoginAppName</span><span class="o">(),</span> 
+                        <span class="n">subject</span><span class="o">,</span> <span class="k">new</span> <span class="n">HadoopConfiguration</span><span class="o">());</span>
+
+    <span class="c1">// LoginContext的login方法调用，会触发关联到的LoginModule的login、commit等</span>
+    <span class="c1">// 一系列方法调用</span>
+    <span class="n">login</span><span class="o">.</span><span class="na">login</span><span class="o">();</span>
+    <span class="n">UserGroupInformation</span> <span class="n">realUser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UserGroupInformation</span><span class="o">(</span><span class="n">subject</span><span class="o">);</span>
+    <span class="n">realUser</span><span class="o">.</span><span class="na">setLogin</span><span class="o">(</span><span class="n">login</span><span class="o">);</span>
+    <span class="n">realUser</span><span class="o">.</span><span class="na">setAuthenticationMethod</span><span class="o">(</span><span class="n">authenticationMethod</span><span class="o">);</span>
+    <span class="n">realUser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UserGroupInformation</span><span class="o">(</span><span class="n">login</span><span class="o">.</span><span class="na">getSubject</span><span class="o">());</span>
+    <span class="c1">// If the HADOOP_PROXY_USER environment variable or property</span>
+    <span class="c1">// is specified, create a proxy user as the logged in user.</span>
+    <span class="n">String</span> <span class="n">proxyUser</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getenv</span><span class="o">(</span><span class="n">HADOOP_PROXY_USER</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">proxyUser</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">proxyUser</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="n">HADOOP_PROXY_USER</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">loginUser</span> <span class="o">=</span> <span class="n">proxyUser</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">realUser</span> <span class="o">:</span> <span class="n">createProxyUser</span><span class="o">(</span><span class="n">proxyUser</span><span class="o">,</span> <span class="n">realUser</span><span class="o">);</span>
+
+    <span class="n">String</span> <span class="n">fileLocation</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getenv</span><span class="o">(</span><span class="n">HADOOP_TOKEN_FILE_LOCATION</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">fileLocation</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// Load the token storage file and put all of the tokens into the</span>
+      <span class="c1">// user. Don't use the FileSystem API for reading since it has a lock</span>
+      <span class="c1">// cycle (HADOOP-9212).</span>
+      <span class="n">Credentials</span> <span class="n">cred</span> <span class="o">=</span> <span class="n">Credentials</span><span class="o">.</span><span class="na">readTokenStorageFile</span><span class="o">(</span>
+          <span class="k">new</span> <span class="nf">File</span><span class="o">(</span><span class="n">fileLocation</span><span class="o">),</span> <span class="n">conf</span><span class="o">);</span>
+      <span class="n">loginUser</span><span class="o">.</span><span class="na">addCredentials</span><span class="o">(</span><span class="n">cred</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">loginUser</span><span class="o">.</span><span class="na">spawnAutoRenewalThreadForUserCreds</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">LoginException</span> <span class="n">le</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"failure to login"</span><span class="o">,</span> <span class="n">le</span><span class="o">);</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"failure to login"</span><span class="o">,</span> <span class="n">le</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"UGI loginUser:"</span><span class="o">+</span><span class="n">loginUser</span><span class="o">);</span>
+  <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>在以上代码加了中文注释的地方，将会触发HadoopLoginModule的login以及commit等方法，执行我们在文章第二部分描述的操作逻辑。</p>
+
+
+            </article>
+        </div>
+      </div>
+      <div class="panel docs-content">
+        <article class="post-content">
+          <div class="wrapper">
+            
+
+
+  <div class="ds-thread" data-thread-key="/bigdata/hadoop/Hadoop%E8%AE%A4%E8%AF%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" data-title="Hadoop认证代码分析" data-url="https://ymgd.github.io/codereader/bigdata/hadoop/Hadoop%E8%AE%A4%E8%AF%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"></div>
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"luoyan35714"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+ 
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+    <footer class="footer" role="contentinfo">
+	<div class="container">
+		<p class="copyright">Copyright &copy; 2014-2018 <a href=""><code>ymgd</code></a>.</p>
+		<p>Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme from <a href="http://lesscss.cn/">Less</a></p>
+	</div>
+</footer>
+
+<script src="/styles/js/jquery.min.js"></script>
+<script src="/styles/js/bootstrap.min.js"></script>
+<script src="/styles/js/holder.min.js"></script>
+<script src="/styles/js/application.js"></script>
+<script src="/styles/js/lessismore.js"></script>
+
+  </body>
+</html>

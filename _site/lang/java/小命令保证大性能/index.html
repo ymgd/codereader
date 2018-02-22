@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>小命令保证大性能</title>
+
+	<link rel="shortcut icon" href="/styles/images/favicon.jpg">
+	<link rel="icon" href="/styles/images/favicon.jpg">
+
+	<link rel="stylesheet" href="/styles/css/index.css">
+	<link rel="stylesheet" href="/styles/css/fontawesome/css/font-awesome.min.css">
+	<link rel="canonical" href="/lang/java/%E5%B0%8F%E5%91%BD%E4%BB%A4%E4%BF%9D%E8%AF%81%E5%A4%A7%E6%80%A7%E8%83%BD/">
+	<link rel="alternate" type="application/rss+xml" title="源码分析" href="/feed.xml">
+	
+	<meta name="description" content="源码分析的博客">
+
+	<script src="/styles/js/jquery.min.js"></script>
+	<!--[if lt IE 9]>
+    	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  	<![endif]-->
+               
+  	<style type="text/css">
+	  	.docs-content{
+	  		margin-bottom: 10px;
+	  	}
+  	</style>
+</head>
+
+
+  <body class="index">
+
+    <header class="navbar navbar-inverse navbar-fixed-top docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="https://ymgd.github.io/codereader/" class="navbar-brand">
+        <img src="/styles/images/logo.jpg">
+      </a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">    
+        <li>
+          <a href="/">时间流</a>
+        </li>
+        <li>
+          <a href="/categories/">按项目分</a>
+        </li>
+        <li>
+          <a href="/tag">按语言分</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">关于<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a rel="nofollow" target="_blank" href="https://github.com/ymgd/codereader">Github</a></li>
+            <li><a href="/feed.xml">RSS订阅</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <div class="docs-header" id="content">
+  <div class="container">
+  	
+  		<!--
+		    <h1>小命令保证大性能</h1>
+		    <p>Post on Oct 17, 2016 by <a href="/about">ymgd</a></p>
+		-->
+		    <h3>I am reading codes</h3>
+    
+  </div>
+</div>
+
+    
+      
+<div class="banner">
+  <div class="container">
+  	
+    	<a href="/categories/#Java-ref">Java</a>	/
+    	<a href="/tag/#Java-ref">Java</a>
+    
+  </div>
+</div>
+
+    
+
+    <div class="container docs-container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sidebar hidden-print" role="complementary">
+        <div id="navigation">
+  <h1>目录</h1>
+  <ul class="nav sidenav">
+<!--
+    
+      
+      
+      
+      
+
+      
+        <li><a href="#year_2016">2016</a>
+          <ul class="nav">
+            <li><a href="#month_2016_November">November</a></li>
+      
+
+      
+            
+          
+              <li><a href="#month_2016_October">October</a></li>
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            </ul>
+          </li>
+      
+    
+-->
+  </ul>
+</div> 
+      </div>
+    </div>
+    <div class="col-md-9" role="main">
+      <div class="panel docs-content">
+        <div class="wrapper">
+            <header class="post-header">
+              <h1 class="post-title">小命令保证大性能</h1>
+              <!--
+                <p class="post-meta">Oct 17, 2016</p>
+              -->
+              
+                <div class="meta">Posted on <span class="postdate">Oct 17, 2016</span> By <a target="_blank" href="https://github.com/ymgd">ymgd</a></div>
+              
+              <br />
+            </header>
+            <article class="post-content">
+              <p>最近在工作中经常和性能压测工作打交道，积累了一些性能分析经验，我觉得这些经验对每一个开发者都有帮助的，能开发出性能高的代码也是我们的最终目标。</p>
+
+<p>由易到难，我们逐步介绍不同命令的用法和好处，这些命令是如何帮助我们开发人员进行性能分析的。</p>
+
+<h2 id="hprof">一、开发者的自测利器-Hprof命令</h2>
+
+<h3 id="section">1、示例演示</h3>
+
+<p>例子程序：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+ * PROJECT_NAME: test
+ * DATE:         16/7/22
+ * CREATE BY:    chao.cheng
+ **/</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HProfTest</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">slowMethod</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">slowerMethod</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">10000</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">HProfTest</span> <span class="n">test</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HProfTest</span><span class="o">();</span>
+        <span class="n">test</span><span class="o">.</span><span class="na">slowerMethod</span><span class="o">();</span>
+        <span class="n">test</span><span class="o">.</span><span class="na">slowMethod</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>注：这是一段测试代码通过sleep方法进行延时，在程序运行过程中很慢，我想知道到底是哪段程序影响的整体性能呢？</p>
+
+<p>我在这个java程序中，加了如下运行参数：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>-agentlib:hprof=cpu=times,interval=10
+/* 
+    times：java函数的执行时间
+    hprof=cpu是针对cpu统计时间
+    interval=10 采样10次 
+*/
+</code></pre>
+</div>
+
+<p>再次运行这段程序显示如下图：</p>
+
+<p><img src="/lang/java/resources/littlecommand/cpuusage.png" alt="" /></p>
+
+<p>这时候还发现在工程目录里面，多了一个文本文件java.hprof.txt，如下图所示：</p>
+
+<p><img src="/lang/java/resources/littlecommand/hprof.png" alt="" /></p>
+
+<p>内容如下：</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>CPU TIME <span class="o">(</span>ms<span class="o">)</span> BEGIN <span class="o">(</span>total <span class="o">=</span> 11542<span class="o">)</span> Fri Jul 22 11:00:34 2016
+rank   self  accum   count trace method
+   1 86.65% 86.65%       1 303422 com.test.HProfTest.slowerMethod
+   2  8.66% 95.31%       1 303423 com.test.HProfTest.slowMethod
+   3  0.25% 95.56%      36 300745 java.util.zip.ZipFile.&lt;init&gt;
+   4  0.20% 95.76%      36 300434 java.lang.String.equals
+   5  0.13% 95.89%      14 301138 java.net.URLStreamHandler.parseURL
+   6  0.11% 96.01%       6 301339 java.net.URLClassLoader<span class="nv">$1</span>.run
+   7  0.10% 96.10%      14 301124 java.lang.String.&lt;init&gt;
+   8  0.09% 96.19%    3407 300355 java.lang.String.charAt
+   9  0.08% 96.27%      36 300443 java.io.UnixFileSystem.normalize
+</code></pre>
+</div>
+
+<p>注：通过上面内容可以看到，哪个类的方法执行时间长，耗费了cpu时间，一目了然，方便我们快速定位问题。</p>
+
+<h3 id="section-1">2、命令的具体讲解</h3>
+
+<p>hprof不是独立的监控工具，它只是一个java agent工具，它可以用在监控Java应用程序在运行时的CPU信息和堆内容，使用java -agentlib:hprof=help命令可以查看hprof的使用文档。</p>
+
+<p><img src="/lang/java/resources/littlecommand/hprofdetail.png" alt="" /></p>
+
+<p>通过上图可以看到这个工具非常强大，可以统计的东西很多，上面的例子统计的是cpu时间，同样我们还可以统计内存占用的dump信息。
+如：-agentlib:hprof=heap,format=b,file=/test.hprof</p>
+
+<p>这个hprof小工具，非常方便我们在用JUnit自测代码的时候结合使用，既可以解决业务上的BUG，又能够在一定程序上解决可发现的性能问题，非常实用。</p>
+
+<h2 id="pidstat">二、性能排查工具-pidstat</h2>
+
+<h3 id="section-2">1、示例演示</h3>
+
+<p>例子程序：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+ * PROJECT_NAME: test
+ * DATE:         16/7/22
+ * CREATE BY:    chao.cheng
+ **/</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PidstatTest</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">PidstatTask</span> <span class="kd">implements</span>  <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+                <span class="kt">double</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">()</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">LazyTask</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">PidstatTask</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">LazyTask</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">LazyTask</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>注：这是一段测试用的java程序，将其运行起来。</p>
+
+<p>在命令行输入：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>pidstat -p 843 1 3 -u -t
+/* 
+-u：代表对cpu使用率的监控
+参数1 3：表示每秒采样一次，一共三次
+-t：将监控级别细化到线程 
+*/
+</code></pre>
+</div>
+
+<p>运行命令显示如下图所示：</p>
+
+<p><img src="/lang/java/resources/littlecommand/pidstat.png" alt="" /></p>
+
+<p>注：其实中TID就是线程ID，%usr表示用户线程使用率，从图中可以看到855这个线程占用cpu非常的高。</p>
+
+<p>再输入如下命令：</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>jstack -l 843 &gt; /tmp/testlog.txt
+</code></pre>
+</div>
+
+<p>查看testlog.txt显示如下部分内容：</p>
+
+<p><img src="/lang/java/resources/littlecommand/jstack.png" alt="" /></p>
+
+<p>注：我们关注的是日志文件的NID这个字段，它对应的就是我们上面说的TID，NID是TID的16进制表示，将上面的十进制855转换成十六进制为357，在日志中进行搜索看到如下内容：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>"Thread-0" prio=10 tid=0x00007f7d90103800 nid=0x357 runnable [0x00007f7d943d5000]
+   java.lang.Thread.State: RUNNABLE
+    at PidstatTest$PidstatTask.run(PidstatTest.java:13)
+    at java.lang.Thread.run(Thread.java:722)
+
+   Locked ownable synchronizers:
+    - None
+</code></pre>
+</div>
+
+<p>以此可以推断出有性能瓶颈的程序点。</p>
+
+<h3 id="pidstat-1">2、pidstat具体命令详解</h3>
+
+<p>pidstat是一个功能非常强大的性能监测工具，他是Sysstat的组件之一，可以从<a href="http://sebastien.godard.pagesperso-orange.fr/download.html">http://sebastien.godard.pagesperso-orange.fr/download.html</a> 进行下载，下载后可以通过./configure等命令进行安装，这个命令的强大之处在于不仅可以监控进程的性能情况，也可以监控线程的性能情况。</p>
+
+<p>pidstat监控cpu常用显示字段内容如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1、PID - 被监控的任务的进程号
+2、%usr - 当在用户层执行（应用程序）时这个任务的cpu使用率，和 nice 优先级无关。注意这个字段计算的cpu时间不包括在虚拟处理器中花去的时间。
+3、%system - 这个任务在系统层使用时的cpu使用率。
+4、%guest - 任务花费在虚拟机上的cpu使用率（运行在虚拟处理器）。
+5、%CPU - 任务总的cpu使用率。在SMP环境（多处理器）中，如果在命令行中输入-I参数的话，cpu使用率会除以你的cpu数量。
+6、CPU - 正在运行这个任务的处理器编号。
+7、Command - 这个任务的命令名称。
+</code></pre>
+</div>
+
+<p>pidstat监控io常用的字段显示内容如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1、kB_rd/s - 任务从硬盘上的读取速度（kb）
+2、kB_wr/s - 任务向硬盘中的写入速度（kb）
+3、kB_ccwr/s - 任务写入磁盘被取消的速率（kb）
+</code></pre>
+</div>
+
+<h2 id="section-3">三、一个内存溢出案例分析</h2>
+
+<h3 id="section-4">1、内存溢出现象</h3>
+
+<p>系统共有8台服务器，每次随机只有一台服务器报java.lang.OutOfMemoryError: GC overhead limit exceeded错误，然后接着就报内存溢出错误java.lang.OutOfMemoryError: Java heap space。</p>
+
+<h3 id="section-5">2、理论支撑</h3>
+
+<p>我们先解释一下什么是GC overhead limit exceeded错误。</p>
+
+<p>GC overhead limt exceed检查是Hotspot VM 1.6定义的一个策略，通过统计GC时间来预测是否要OOM了，提前抛出异常，防止OOM发生。Sun 官方对此的定义是：“并行/并发回收器在GC回收时间过长时会抛出OutOfMemroyError。过长的定义是，超过98%的时间用来做GC并且回收了不到2%的堆内存。用来避免内存过小造成应用不能正常工作。</p>
+
+<p>可以看到当堆中的对象无法被收回的时候，就提前遇警报出这样的错误，此时内存并没有溢出，这个特性在JDK中是默认添加的。</p>
+
+<h3 id="dump">3、DUMP文件分析</h3>
+
+<p>将dump文件导入VisualVM工具中，如下图所示：
+<img src="/lang/java/resources/littlecommand/virtualvm.png" alt="" /></p>
+
+<p>通过上图可以看出类结构图中，最占用内存的是char[]，LinkedHashMap和String三项。但是这三项的实例数并没有占满，看样子不会内存溢出，怎么才能具体分析呢？原因就在于GC overhead limt exceed，这个错并不会在内存真正溢出才会报，所以通过dump文件，我们只能自己去判断分析，哪些项有可能会造成溢出，我们进入char[]项具体来看，会发现里面有很多hessian的url字符被缓存，通过排除程序可以看到由于底层中间件程序为了提高“性能”，将每次调用的url都缓存起来，不用每次都生成，但没有相应缓存释放操作，于是造成了大量字符对象长期持有从而报错，在此就不截图来具体看代码，涉及一些公司信息。</p>
+
+<h3 id="section-6">4、问题解决方案</h3>
+
+<p>可以添加JVM的启动参数来去掉提前报警限制：-XX:-UseGCOverheadLimit，于其让应用每次都提前报警，还不如让暴风雨来的更猛些，直接内存溢出，因为服务器是集群，其中一台挂掉不会影响线上正常交易，同时也方便我们通过日志来排错。</p>
+
+<p>通过排查程序，检查系统是否有使用大内存的代码不释放或死循环。</p>
+
+
+            </article>
+        </div>
+      </div>
+      <div class="panel docs-content">
+        <article class="post-content">
+          <div class="wrapper">
+            
+
+
+  <div class="ds-thread" data-thread-key="/lang/java/%E5%B0%8F%E5%91%BD%E4%BB%A4%E4%BF%9D%E8%AF%81%E5%A4%A7%E6%80%A7%E8%83%BD/" data-title="小命令保证大性能" data-url="https://ymgd.github.io/codereader/lang/java/%E5%B0%8F%E5%91%BD%E4%BB%A4%E4%BF%9D%E8%AF%81%E5%A4%A7%E6%80%A7%E8%83%BD/"></div>
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"luoyan35714"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+ 
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+    <footer class="footer" role="contentinfo">
+	<div class="container">
+		<p class="copyright">Copyright &copy; 2014-2018 <a href=""><code>ymgd</code></a>.</p>
+		<p>Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme from <a href="http://lesscss.cn/">Less</a></p>
+	</div>
+</footer>
+
+<script src="/styles/js/jquery.min.js"></script>
+<script src="/styles/js/bootstrap.min.js"></script>
+<script src="/styles/js/holder.min.js"></script>
+<script src="/styles/js/application.js"></script>
+<script src="/styles/js/lessismore.js"></script>
+
+  </body>
+</html>

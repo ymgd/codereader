@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hadoop监控代码分析</title>
+
+	<link rel="shortcut icon" href="/styles/images/favicon.jpg">
+	<link rel="icon" href="/styles/images/favicon.jpg">
+
+	<link rel="stylesheet" href="/styles/css/index.css">
+	<link rel="stylesheet" href="/styles/css/fontawesome/css/font-awesome.min.css">
+	<link rel="canonical" href="/2016/11/11/Hadoop%E7%9B%91%E6%8E%A7%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">
+	<link rel="alternate" type="application/rss+xml" title="源码分析" href="/feed.xml">
+	
+	<meta name="description" content="源码分析的博客">
+
+	<script src="/styles/js/jquery.min.js"></script>
+	<!--[if lt IE 9]>
+    	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  	<![endif]-->
+               
+  	<style type="text/css">
+	  	.docs-content{
+	  		margin-bottom: 10px;
+	  	}
+  	</style>
+</head>
+
+
+  <body class="index">
+
+    <header class="navbar navbar-inverse navbar-fixed-top docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="https://ymgd.github.io/codereader/" class="navbar-brand">
+        <img src="/styles/images/logo.jpg">
+      </a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">    
+        <li>
+          <a href="/">时间流</a>
+        </li>
+        <li>
+          <a href="/categories/">按项目分</a>
+        </li>
+        <li>
+          <a href="/tag">按语言分</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">关于<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a rel="nofollow" target="_blank" href="https://github.com/ymgd/codereader">Github</a></li>
+            <li><a href="/feed.xml">RSS订阅</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <div class="docs-header" id="content">
+  <div class="container">
+  	
+  		<!--
+		    <h1>Hadoop监控代码分析</h1>
+		    <p>Post on Nov 11, 2016 by <a href="/about">ymgd</a></p>
+		-->
+		    <h3>I am reading codes</h3>
+    
+  </div>
+</div>
+
+    
+      
+<div class="banner">
+  <div class="container">
+  	
+    	<a href="/categories/#Hadoop-ref">Hadoop</a>	/
+    	<a href="/tag/#Java-ref">Java</a>
+    
+  </div>
+</div>
+
+    
+
+    <div class="container docs-container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sidebar hidden-print" role="complementary">
+        <div id="navigation">
+  <h1>目录</h1>
+  <ul class="nav sidenav">
+<!--
+    
+      
+      
+      
+      
+
+      
+        <li><a href="#year_2016">2016</a>
+          <ul class="nav">
+            <li><a href="#month_2016_November">November</a></li>
+      
+
+      
+            
+          
+              <li><a href="#month_2016_October">October</a></li>
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            
+          
+        
+      
+    
+      
+      
+      
+      
+
+      
+
+      
+            </ul>
+          </li>
+      
+    
+-->
+  </ul>
+</div> 
+      </div>
+    </div>
+    <div class="col-md-9" role="main">
+      <div class="panel docs-content">
+        <div class="wrapper">
+            <header class="post-header">
+              <h1 class="post-title">Hadoop监控代码分析</h1>
+              <!--
+                <p class="post-meta">Nov 11, 2016 • kennethxian</p>
+              -->
+              
+                <div class="meta">Posted on <span class="postdate">Nov 11, 2016</span> By <a target="_blank" href="https://github.com/kennethxian">kennethxian</a></div>
+              
+              <br />
+            </header>
+            <article class="post-content">
+              <h2 id="section">基本配置方法</h2>
+
+<p>Hadoop监控实现了灵活的配置机制，可根据实际需求，在配置文件中指定采用什么方式（文件或者Ganglia等监控系统）收集Hadoop指标。</p>
+
+<p>一个简单的配置示例如下：</p>
+
+<p><img src="/bigdata/hadoop/resources/metricsconf.png" alt="" /></p>
+
+<p>配置方法类似Log4j，遵循Java Property文件的定义格式。</p>
+
+<p>例子中，*.sink.foo.class定义了监控中所有prefix（监控配置项中的prefix代表不同的Hadoop被监控进程，比如namenode、datanode等），都定义了一个取名为foo的Sink，其对应类实现为org.apache.hadoop.metrics2.sink.FileSink。于是，Hadoop各服务进程需要输出监控信息时，会调用FileSink的相应方法进行输出（实际FileSink是将监控信息输出到文件）。<br />
+之后的配置项，定义了指标存储的具体文件名称。如namenode.sink.foo.filename=/tmp/namenode-metrics.out，定义了namenode的监控指标存储的位置。</p>
+
+<p>对于不同的被监控进程（prefix），可以定义不同的指标存储文件。</p>
+
+<p>对于同一个被监控进程，也可以定义将其指标存储到不同的目标文件。<br />
+比如，在定义了 <br /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>*.sink.foo.class=org.apache.hadoop.metrics2.sink.FileSink
+namenode.sink.foo.filename=/tmp/namenode-metrics.out
+</code></pre>
+</div>
+
+<p>将namenode的指标输出到/tmp/namenode-metrics.out的同时，还可以做如下定义，将其监控指标输出到别的文件（比如/tmp/namenode-metrics2.out）：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>*.sink.foo2.class=org.apache.hadoop.metrics2.sink.FileSink
+namenode.sink.foo2.filename=/tmp/namenode-metrics2.out
+</code></pre>
+</div>
+
+<p>除了将sink定义为FileSink，将监控指标输出到文件，当将Sink定义为org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31，可以将指标输出到第三方监控系统Ganglia，将指标以图形界面方式进行展示。</p>
+
+<h2 id="section-1">实现原理及代码</h2>
+
+<p>Hadoop监控机制围绕Metrics System、Metrics Source、Metrics Sink三个主要的角色展开。</p>
+
+<p><img src="/bigdata/hadoop/resources/metricsarch.png" alt="" /></p>
+
+<p>顾名思义，Metrics System负责协调监控体系各实体的运作，Metrics Source负责在被监控进程处收集（统计）指标，Metrics Sink负责具体的将指标输送到希望的目的地（文件或者监控系统等）。</p>
+
+<p>代码实现中，MetricsSystem、MetricsSource、MeticsSink都是interface或者abstract class，其中MetricsSystem的默认实现类为MetricsSystemImpl，MetricsSource以及MeticsSink根据不同的需求场景，扩展出不同的实现类。</p>
+
+<p>指标监控的整个操作流程，可以归纳为如下几步：</p>
+
+<ol>
+  <li>MetricsSource、MetricsSink通过调用MetricsSystem的register方法，注册到MetricsSystem上。</li>
+  <li>MetricsSource在被监控进程中，将关键的指标存入到MetricsSource对象的内存中。</li>
+  <li>MetricsSystem上启动定时器，每隔一段时间，调用已经在其上注册过的MetricsSource的getMetrics方法（MetricsSource在它的getMetrics逻辑中实现将内存中的指标数据反馈给MetricsSystem的目的（通过修改函数参数中传入的对象））。之后，MetricsSystem调用已经在其上注册过的MetricsSink的putMetrics方法，MetricsSink在各自的putMetrics方法中，实现将指标实际传输到目的地的逻辑。</li>
+</ol>
+
+<p>以上过程可以用下图做简要描述：</p>
+
+<p><img src="/bigdata/hadoop/resources/metricscontrol.png" alt="" /></p>
+
+<h2 id="section-2">从一个实例进行了解</h2>
+
+<p>NodeManager是Hadoop Yarn体系中对任务节点资源进行管理的进程，实现类为org.apache.hadoop.yarn.server.nodemanager.NodeManager。类属性中包含如下监控相关部分：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NodeManager</span> <span class="kd">extends</span> <span class="n">CompositeService</span> 
+  <span class="kd">implements</span> <span class="n">EventHandler</span><span class="o">&lt;</span><span class="n">NodeManagerEvent</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="o">...</span>
+  <span class="kd">protected</span> <span class="kd">final</span> <span class="n">NodeManagerMetrics</span> <span class="n">metrics</span> <span class="o">=</span> <span class="n">NodeManagerMetrics</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+  <span class="o">...</span>
+</code></pre>
+</div>
+
+<p>这里，NodeMangerMetrics即为应用于NodeManger类对象的一个具体MetricsSource管理类：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Metrics</span><span class="o">(</span><span class="n">about</span><span class="o">=</span><span class="s">"Metrics for node manager"</span><span class="o">,</span> <span class="n">context</span><span class="o">=</span><span class="s">"yarn"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NodeManagerMetrics</span> <span class="o">{</span>
+  <span class="nd">@Metric</span> <span class="n">MutableCounterInt</span> <span class="n">containersLaunched</span><span class="o">;</span>
+  <span class="nd">@Metric</span> <span class="n">MutableCounterInt</span> <span class="n">containersCompleted</span><span class="o">;</span>
+  <span class="nd">@Metric</span> <span class="n">MutableCounterInt</span> <span class="n">containersFailed</span><span class="o">;</span>
+  <span class="nd">@Metric</span> <span class="n">MutableCounterInt</span> <span class="n">containersKilled</span><span class="o">;</span>
+  <span class="nd">@Metric</span><span class="o">(</span><span class="s">"# of initializing containers"</span><span class="o">)</span>
+      <span class="n">MutableGaugeInt</span> <span class="n">containersIniting</span><span class="o">;</span>
+  <span class="nd">@Metric</span> <span class="n">MutableGaugeInt</span> <span class="n">containersRunning</span><span class="o">;</span>
+  <span class="nd">@Metric</span><span class="o">(</span><span class="s">"Current allocated memory in GB"</span><span class="o">)</span>
+      <span class="n">MutableGaugeInt</span> <span class="n">allocatedGB</span><span class="o">;</span>
+  <span class="nd">@Metric</span><span class="o">(</span><span class="s">"Current # of allocated containers"</span><span class="o">)</span>
+      <span class="n">MutableGaugeInt</span> <span class="n">allocatedContainers</span><span class="o">;</span>
+  <span class="nd">@Metric</span> <span class="n">MutableGaugeInt</span> <span class="n">availableGB</span><span class="o">;</span>
+  <span class="nd">@Metric</span><span class="o">(</span><span class="s">"Current allocated Virtual Cores"</span><span class="o">)</span>
+      <span class="n">MutableGaugeInt</span> <span class="n">allocatedVCores</span><span class="o">;</span>
+  <span class="nd">@Metric</span> <span class="n">MutableGaugeInt</span> <span class="n">availableVCores</span><span class="o">;</span>
+  <span class="nd">@Metric</span><span class="o">(</span><span class="s">"Container launch duration"</span><span class="o">)</span>
+      <span class="n">MutableRate</span> <span class="n">containerLaunchDuration</span><span class="o">;</span>
+</code></pre>
+</div>
+
+<p>后面我们将看到，这个NodeMangerMetrics类似一个NodeManger中metrics的hub，它将提供方法，生成MetricsSource，管理这里用annotation方式（@Metric）声明的多个指标。</p>
+
+<h3 id="section-3">1. 注册</h3>
+
+<h4 id="section-4">流程</h4>
+
+<p>回顾刚才NodeManger中，对于NodeMangerMetrics的调用NodeMangerMetrics.create()的具体实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">NodeManagerMetrics</span> <span class="nf">create</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="nf">create</span><span class="o">(</span><span class="n">DefaultMetricsSystem</span><span class="o">.</span><span class="na">instance</span><span class="o">());</span>
+<span class="o">}</span>
+
+<span class="kd">static</span> <span class="n">NodeManagerMetrics</span> <span class="nf">create</span><span class="o">(</span><span class="n">MetricsSystem</span> <span class="n">ms</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">JvmMetrics</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"NodeManager"</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">ms</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">ms</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeManagerMetrics</span><span class="o">());</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>create()调用create(DefaultMetricsSystem.instance())，参数中的DefaultMetricsSystem.instance()会生成一个MetricsSystem的单例，其实是一个MetricsSystemImpl对象，生成方法后面再说。</p>
+
+<p>create(MetricsSystem ms)方法中，第一行调用JvmMetrics.create(“NodeManager”, null, ms)，的具体实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">JvmMetrics</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">processName</span><span class="o">,</span> <span class="n">String</span> <span class="n">sessionId</span><span class="o">,</span>
+                                  <span class="n">MetricsSystem</span> <span class="n">ms</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">ms</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">JvmMetrics</span><span class="o">.</span><span class="na">name</span><span class="o">(),</span> <span class="n">JvmMetrics</span><span class="o">.</span><span class="na">description</span><span class="o">(),</span>
+                     <span class="k">new</span> <span class="nf">JvmMetrics</span><span class="o">(</span><span class="n">processName</span><span class="o">,</span> <span class="n">sessionId</span><span class="o">));</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>实际就是将JvmMetrics register到了参数传进来的这个单例MetricsSystem中。而这个JvmMetrics其实就是MetricsSource的一个实现类：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JvmMetrics</span> <span class="kd">implements</span> <span class="n">MetricsSource</span> <span class="o">{</span>
+  <span class="o">...</span>
+</code></pre>
+</div>
+
+<p>回到NodeManagerMetrics的create(MetricsSystem ms)中的第二条调用ms.register(new NodeManagerMetrics())。</p>
+
+<p>这里同样调用了MetricsSystem（ms对象）的register方法，但是，参数中的“new NodeManagerMetrics()”生成的并不是MetricsSource对象（因为NodeManagerMetrics并不是MetricsSource的实现类，见上）。看看这个register方法的实现：</p>
+
+<p>在MetricsSystem代码中：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">register</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="n">T</span> <span class="n">source</span><span class="o">);</span>
+<span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">register</span><span class="o">(</span><span class="n">T</span> <span class="n">source</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="nf">register</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">source</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>而MetricsSystem的具体实现类MetricsSystemImpl当中：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Override</span> <span class="kd">public</span> <span class="kd">synchronized</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span>
+<span class="n">T</span> <span class="nf">register</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="n">T</span> <span class="n">source</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">MetricsSourceBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="n">MetricsAnnotations</span><span class="o">.</span><span class="na">newSourceBuilder</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+  <span class="kd">final</span> <span class="n">MetricsSource</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+  <span class="n">MetricsInfo</span> <span class="n">si</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="na">info</span><span class="o">();</span>
+  <span class="n">String</span> <span class="n">name2</span> <span class="o">=</span> <span class="n">name</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">si</span><span class="o">.</span><span class="na">name</span><span class="o">()</span> <span class="o">:</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">final</span> <span class="n">String</span> <span class="n">finalDesc</span> <span class="o">=</span> <span class="n">desc</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">si</span><span class="o">.</span><span class="na">description</span><span class="o">()</span> <span class="o">:</span> <span class="n">desc</span><span class="o">;</span>
+  <span class="kd">final</span> <span class="n">String</span> <span class="n">finalName</span> <span class="o">=</span> <span class="c1">// be friendly to non-metrics tests</span>
+      <span class="n">DefaultMetricsSystem</span><span class="o">.</span><span class="na">sourceName</span><span class="o">(</span><span class="n">name2</span><span class="o">,</span> <span class="o">!</span><span class="n">monitoring</span><span class="o">);</span>
+  <span class="n">allSources</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">finalName</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+  <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">finalName</span> <span class="o">+</span><span class="s">", "</span><span class="o">+</span> <span class="n">finalDesc</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">monitoring</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">registerSource</span><span class="o">(</span><span class="n">finalName</span><span class="o">,</span> <span class="n">finalDesc</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="c1">// We want to re-register the source to pick up new config when the</span>
+  <span class="c1">// metrics system restarts.</span>
+  <span class="n">register</span><span class="o">(</span><span class="n">finalName</span><span class="o">,</span> <span class="k">new</span> <span class="n">AbstractCallback</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postStart</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">registerSource</span><span class="o">(</span><span class="n">finalName</span><span class="o">,</span> <span class="n">finalDesc</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">});</span>
+  <span class="k">return</span> <span class="n">source</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>聚焦这个方法的前两行：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">MetricsSourceBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="n">MetricsAnnotations</span><span class="o">.</span><span class="na">newSourceBuilder</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+<span class="kd">final</span> <span class="n">MetricsSource</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</code></pre>
+</div>
+
+<p>很明显，经过MetricsAnnotations.newSourceBuilder，以及MetricsSourceBuilder.build两个方法的调用，将一个普通的对象，转换成了MetricsSource（在之后内容再进行详细描述）。</p>
+
+<p>再然后，调用registerSource方法，将Metrics注册到MetricsSystem当中：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">registerSource</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="n">MetricsSource</span> <span class="n">source</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">checkNotNull</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="s">"config"</span><span class="o">);</span>
+  <span class="n">MetricsConfig</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">sourceConfigs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+  <span class="n">MetricsSourceAdapter</span> <span class="n">sa</span> <span class="o">=</span> <span class="n">conf</span> <span class="o">!=</span> <span class="kc">null</span>
+      <span class="o">?</span> <span class="k">new</span> <span class="n">MetricsSourceAdapter</span><span class="o">(</span><span class="n">prefix</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">source</span><span class="o">,</span>
+                                 <span class="n">injectedTags</span><span class="o">,</span> <span class="n">period</span><span class="o">,</span> <span class="n">conf</span><span class="o">)</span>
+      <span class="o">:</span> <span class="k">new</span> <span class="n">MetricsSourceAdapter</span><span class="o">(</span><span class="n">prefix</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">source</span><span class="o">,</span>
+        <span class="n">injectedTags</span><span class="o">,</span> <span class="n">period</span><span class="o">,</span> <span class="n">config</span><span class="o">.</span><span class="na">subset</span><span class="o">(</span><span class="n">SOURCE_KEY</span><span class="o">));</span>
+  <span class="n">sources</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">sa</span><span class="o">);</span>
+  <span class="n">sa</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+  <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Registered source "</span><span class="o">+</span> <span class="n">name</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>这里涉及到一个更细节的控制，MetricsSystemImpl用一个HashMap类型的属性sources将所有的source管理起来（当然，每个source在这里都被一个MetricsSourceAdapter进行了封装）。</p>
+
+<h4 id="section-5">补充</h4>
+
+<p><strong>1. MetricsSystem单例的生成方法</strong></p>
+
+<p>NodeManager中用DefaultMetricsSystem.instance()生成MetricsSystem实例：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="n">DefaultMetricsSystem</span> <span class="o">{</span>
+  <span class="n">INSTANCE</span><span class="o">;</span> <span class="c1">// 单例</span>
+
+  <span class="kd">private</span> <span class="n">AtomicReference</span><span class="o">&lt;</span><span class="n">MetricsSystem</span><span class="o">&gt;</span> <span class="n">impl</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="n">AtomicReference</span><span class="o">&lt;</span><span class="n">MetricsSystem</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">MetricsSystemImpl</span><span class="o">());</span>
+  <span class="kd">volatile</span> <span class="kt">boolean</span> <span class="n">miniClusterMode</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="kd">transient</span> <span class="kd">final</span> <span class="n">UniqueNames</span> <span class="n">mBeanNames</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UniqueNames</span><span class="o">();</span>
+  <span class="kd">transient</span> <span class="kd">final</span> <span class="n">UniqueNames</span> <span class="n">sourceNames</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UniqueNames</span><span class="o">();</span>
+
+  <span class="cm">/**
+   * Convenience method to initialize the metrics system
+   * @param prefix  for the metrics system configuration
+   * @return the metrics system instance
+   */</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="n">MetricsSystem</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">String</span> <span class="n">prefix</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">prefix</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="n">MetricsSystem</span> <span class="nf">init</span><span class="o">(</span><span class="n">String</span> <span class="n">prefix</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">impl</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">init</span><span class="o">(</span><span class="n">prefix</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="o">...</span>
+</code></pre>
+</div>
+
+<p>DefaultMetricsSystem为枚举类型，其中声明了AtomicReference<MetricsSystem>类型的实例impl属性，用AtomicReference实现多线程同时申请实例时可能出现的冲突。真是的单例对象，实际由new MetricsSystemImpl()产生。</MetricsSystem></p>
+
+<p>因此，默认情况下，MetricsSystem的单例对象为MetricsSystemImpl的实例。</p>
+
+<p><strong>2. NodeManagerMetrics转换成MetricsSource的过程</strong></p>
+
+<p>回顾这个过程使用到的方法调用：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">MetricsSourceBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="n">MetricsAnnotations</span><span class="o">.</span><span class="na">newSourceBuilder</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+<span class="kd">final</span> <span class="n">MetricsSource</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</code></pre>
+</div>
+
+<p>MetricsAnnotations类的newSourceBuilder方法实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">MetricsSourceBuilder</span> <span class="nf">newSourceBuilder</span><span class="o">(</span><span class="n">Object</span> <span class="n">source</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">MetricsSourceBuilder</span><span class="o">(</span><span class="n">source</span><span class="o">,</span>
+      <span class="n">DefaultMetricsFactory</span><span class="o">.</span><span class="na">getAnnotatedMetricsFactory</span><span class="o">());</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>创建了一个MetricsSourceBuilder，并将需要转换的源对象作为构造函数的第一个参数传入。</p>
+
+<p>当MetricsSourceBuilder对象创建完成之后，调用该对象的build方法，将之前构造函数传入的source对象转换成MetricsSource对象。</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="n">MetricsSource</span> <span class="nf">build</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">source</span> <span class="k">instanceof</span> <span class="n">MetricsSource</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">hasAtMetric</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">hasRegistry</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">MetricsException</span><span class="o">(</span><span class="s">"Hybrid metrics: registry required."</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">MetricsSource</span><span class="o">)</span> <span class="n">source</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="k">else</span> <span class="nf">if</span> <span class="o">(!</span><span class="n">hasAtMetric</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">MetricsException</span><span class="o">(</span><span class="s">"No valid @Metric annotation found."</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">MetricsSource</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getMetrics</span><span class="o">(</span><span class="n">MetricsCollector</span> <span class="n">builder</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">all</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">registry</span><span class="o">.</span><span class="na">snapshot</span><span class="o">(</span><span class="n">builder</span><span class="o">.</span><span class="na">addRecord</span><span class="o">(</span><span class="n">registry</span><span class="o">.</span><span class="na">info</span><span class="o">()),</span> <span class="n">all</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">};</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>该build方法最终返回的就是一个新建匿名类对象，实现了MetricsSource接口的getMetrics，这里实际就是获取之前构造函数传入的那个对象中，用annotation声明的所有Metrics。</p>
+
+<h3 id="section-6">2. 收集及发送指标</h3>
+
+<p>在DefaultMetricsSystem的initialize方法中，MetricsSystem的实现类MetricsSystemImpl的init方法会被调用。init进而调用start，在start方法中，启动了一个定时器：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">startTimer</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">timer</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="n">prefix</span> <span class="o">+</span><span class="s">" metrics system timer already started!"</span><span class="o">);</span>
+    <span class="k">return</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="n">logicalTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="kt">long</span> <span class="n">millis</span> <span class="o">=</span> <span class="n">period</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">;</span>
+  <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Timer</span><span class="o">(</span><span class="s">"Timer for '"</span><span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span><span class="s">"' metrics system"</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+  <span class="n">timer</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">TimerTask</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+          <span class="k">try</span> <span class="o">{</span>
+            <span class="n">onTimerEvent</span><span class="o">();</span>
+          <span class="o">}</span>
+          <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+          <span class="o">}</span>
+        <span class="o">}</span>
+      <span class="o">},</span> <span class="n">millis</span><span class="o">,</span> <span class="n">millis</span><span class="o">);</span>
+  <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Scheduled snapshot period at "</span><span class="o">+</span> <span class="n">period</span> <span class="o">+</span><span class="s">" second(s)."</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">onTimerEvent</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">logicalTime</span> <span class="o">+=</span> <span class="n">period</span><span class="o">;</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">sinks</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">publishMetrics</span><span class="o">(</span><span class="n">sampleMetrics</span><span class="o">(),</span> <span class="kc">false</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>定时器在定时触发的处理函数onTimerEvent中，先后触发sampleMetrics，以及publishMetrics两个方法。</p>
+
+<p>在sampleMetrics实现中：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">synchronized</span> <span class="n">MetricsBuffer</span> <span class="nf">sampleMetrics</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">collector</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+  <span class="n">MetricsBufferBuilder</span> <span class="n">bufferBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MetricsBufferBuilder</span><span class="o">();</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="n">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MetricsSourceAdapter</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">sources</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">sourceFilter</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">sourceFilter</span><span class="o">.</span><span class="na">accepts</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()))</span> <span class="o">{</span>
+      <span class="n">snapshotMetrics</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">(),</span> <span class="n">bufferBuilder</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">publishSelfMetrics</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">snapshotMetrics</span><span class="o">(</span><span class="n">sysSource</span><span class="o">,</span> <span class="n">bufferBuilder</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="n">MetricsBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">bufferBuilder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+  <span class="k">return</span> <span class="n">buffer</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>遍历之前向MetricsSystem注册过的Source，调用其getMetrics方法，并放到buffer当中返回。</p>
+
+<p>sampleMetrics返回的buffer，会作为publishMetrics调用时的第一个参数。</p>
+
+<p>而publishMetrics的实现：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">publishMetrics</span><span class="o">(</span><span class="n">MetricsBuffer</span> <span class="n">buffer</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">immediate</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">dropped</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="k">for</span> <span class="o">(</span><span class="n">MetricsSinkAdapter</span> <span class="n">sa</span> <span class="o">:</span> <span class="n">sinks</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
+    <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">Time</span><span class="o">.</span><span class="na">now</span><span class="o">();</span>
+    <span class="kt">boolean</span> <span class="n">result</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">immediate</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="na">putMetricsImmediate</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span> 
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="na">putMetrics</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="n">logicalTime</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">dropped</span> <span class="o">+=</span> <span class="n">result</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="n">publishStat</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Time</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="n">droppedPubAll</span><span class="o">.</span><span class="na">incr</span><span class="o">(</span><span class="n">dropped</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>遍历之前注册到MetricsSystem上的Sink（注册过程跟Source类似），调用他们的putMetrics方法，将buffer中的内容发送到指标的目的地。</p>
+
+
+            </article>
+        </div>
+      </div>
+      <div class="panel docs-content">
+        <article class="post-content">
+          <div class="wrapper">
+            
+
+
+  <div class="ds-thread" data-thread-key="/2016/11/11/Hadoop%E7%9B%91%E6%8E%A7%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" data-title="Hadoop监控代码分析" data-url="https://ymgd.github.io/codereader/2016/11/11/Hadoop%E7%9B%91%E6%8E%A7%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"></div>
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"luoyan35714"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+ 
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+    <footer class="footer" role="contentinfo">
+	<div class="container">
+		<p class="copyright">Copyright &copy; 2014-2018 <a href=""><code>ymgd</code></a>.</p>
+		<p>Powered by <a href="http://jekyllrb.com">Jekyll</a>, theme from <a href="http://lesscss.cn/">Less</a></p>
+	</div>
+</footer>
+
+<script src="/styles/js/jquery.min.js"></script>
+<script src="/styles/js/bootstrap.min.js"></script>
+<script src="/styles/js/holder.min.js"></script>
+<script src="/styles/js/application.js"></script>
+<script src="/styles/js/lessismore.js"></script>
+
+  </body>
+</html>
