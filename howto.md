@@ -1,4 +1,11 @@
-# 学习开源代码的基本路径
+---
+layout: post
+title:  学习开源代码的基本路径
+date:   2018-02-23 16:03:00 +0800
+categories: 源码分析
+author: kennethxian
+rank: 1 
+---
 
 ##写在前面
 
