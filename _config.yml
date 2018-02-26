@@ -24,7 +24,7 @@ markdown: kramdown
 
 FB:
   comments :
-    provider : duoshuo
+    provider : gitment
     duoshuo:
         short_name : luoyan35714
     disqus :
