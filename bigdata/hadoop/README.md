@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Hadoop项目说明
-date:   2016-10-13 02:08:00 +0800
+date:   2016-10-14 02:08:00 +0800
 categories: Hadoop
 tag: Java
 rank: 0

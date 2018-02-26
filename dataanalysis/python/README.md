@@ -3,6 +3,7 @@ layout: post
 title:  Python数据分析
 date:   2016-10-26 17:08:00 +0800
 tag: Python 
+categories: 数据分析
 rank: 0
 author: 1987hasit
 ---
@@ -49,6 +50,7 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)<br>
 
 * 1880-2014年间全美婴儿姓名分析
 * [项目地址](https://www.kaggle.com/kaggle/us-baby-names)
+* 如果从Kaggle下载数据有困难，可以从这里获取：[https://pan.baidu.com/s/1ejmMom](https://pan.baidu.com/s/1ejmMom) 密码:yt33
 
 ### 3.2 代码讲解
 
