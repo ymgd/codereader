@@ -52,6 +52,6 @@ https://github.com/ymgd/codereader
 
 可以给我们提交PR，也可以通过公众号联系我们。
 
-[1]: /pub.jpg
-[2]: /projectexample.jpg
-[3]: /readmeexample.jpg
+[1]: pub.jpg
+[2]: projectexample.jpg
+[3]: readmeexample.jpg
