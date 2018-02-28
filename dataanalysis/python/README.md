@@ -1,7 +1,11 @@
 # Python数据分析
 
-by [@Robin](http://wenda.chinahadoop.cn/people/Robin_TY)<br>
-[课件下载](./python_data_analysis_slides.pdf)<br/>
+[共读活动链接](http://www.chinahadoop.cn/course/1111/learn#lesson/20659)
+
+by [@梁斌](http://wenda.chinahadoop.cn/people/Robin_TY)
+
+[课件下载](./python_data_analysis_slides.pdf)
+
 部分内容整理自互联网，感谢众多同学的分享。
 
 ## 1. 项目介绍
