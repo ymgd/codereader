@@ -5,7 +5,7 @@ date:   2016-10-26 17:08:00 +0800
 tag: Python 
 categories: 数据分析
 rank: 0
-author: 1987hasit
+author: drbinliang
 ---
 
 by [@梁斌](http://wenda.chinahadoop.cn/people/Robin_TY)
