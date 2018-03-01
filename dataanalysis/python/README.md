@@ -8,12 +8,14 @@ rank: 0
 author: 1987hasit
 ---
 
-by [@梁斌](http://csusap.csu.edu.au/~bliang03/)
+# Python数据分析
 
-[课件下载](/codereader/dataanalysis/python/python_data_analysis_slides.pdf)
+[共读活动链接](http://www.chinahadoop.cn/course/1111/learn#lesson/20659)
 
-by [@Robin](http://wenda.chinahadoop.cn/people/Robin_TY)<br>
-[课件下载](./python_data_analysis_slides.pdf)<br/>
+by [@梁斌](http://wenda.chinahadoop.cn/people/Robin_TY)
+
+[课件下载](./python_data_analysis_slides.pdf)
+
 部分内容整理自互联网，感谢众多同学的分享。
 
 ## 1. 项目介绍
@@ -53,12 +55,10 @@ by [@Robin](http://wenda.chinahadoop.cn/people/Robin_TY)<br>
 ## 3. 案例讲解
 
 ### 3.1 案例说明
-
 * 1880-2014年间全美婴儿姓名分析
 * [项目地址](https://www.kaggle.com/kaggle/us-baby-names)
 * 如果从Kaggle下载数据有困难，可以从这里获取：[https://pan.baidu.com/s/1ejmMom](https://pan.baidu.com/s/1ejmMom) 密码:yt33
 
 ### 3.2 代码讲解
-
-* [数据概述](https://github.com/ymgd/codereader/blob/master/dataanalysis/python/data_overview.ipynb)
-* [美剧对婴儿姓名的影响](https://github.com/ymgd/codereader/blob/master/dataanalysis/python/tv_inspired_baby_names.ipynb)
+* [数据概述](./data_overview.ipynb)
+* [美剧对婴儿姓名的影响](./tv_inspired_baby_names.ipynb)
