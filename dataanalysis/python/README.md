@@ -14,6 +14,8 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)
 
 [课件下载](/codereader/dataanalysis/python/python_data_analysis_slides.pdf)
 
+by [@Robin](http://wenda.chinahadoop.cn/people/Robin_TY)<br>
+[课件下载](./python_data_analysis_slides.pdf)<br/>
 部分内容整理自互联网，感谢众多同学的分享。
 
 ## 1. 项目介绍
@@ -26,12 +28,15 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)
 
 * [Python官方下载](https://www.python.org/downloads/)
 * [ANACONDA下载](https://www.continuum.io/downloads)
+* [Python2 or Python3](https://wiki.python.org/moin/Python2orPython3)
 
 ### 2.2 编程环境（IDE）
 
-* [PyCharm](https://www.jetbrains.com/pycharm/) 或
-* Eclipse + PyDev ([Eclipse下载](https://eclipse.org/downloads/), [PyDev下载](https://marketplace.eclipse.org/content/pydev-python-ide-eclipse)) 或
-* [IPython](https://ipython.org/) 或
+以下IDE选择一个即可
+* [PyCharm](https://www.jetbrains.com/pycharm/)，Community版本已够用
+* Eclipse + PyDev ([Eclipse下载](https://eclipse.org/downloads/), [PyDev下载](https://marketplace.eclipse.org/content/pydev-python-ide-eclipse))
+* [IPython](https://ipython.org/)，Anaconda已包含
+* [Visual Studio Code](https://code.visualstudio.com/docs/languages/python)
 * 其他...
 
 ### 2.3 Python基础知识
@@ -45,7 +50,7 @@ by [@梁斌](http://csusap.csu.edu.au/~bliang03/)
 * [SciPy](https://www.scipy.org/)（Scientific Python），一款方便、易于使用、转为科学和工程设计的Python工具包。
 * [Matplotlib](http://matplotlib.org/)，Python著名的绘图库。
 * [Pandas](http://pandas.pydata.org/)（Python Data Analysis Library），基于Numpy构建的含有更高级数据结构和工具的数据分析包。
-* [Scikit Learn](http://scikit-learn.org/)，基于Python的机器学习模块。
+* [scikit-learn](http://scikit-learn.org/)，基于Python的机器学习模块。
 
 ## 3. 案例讲解
 
