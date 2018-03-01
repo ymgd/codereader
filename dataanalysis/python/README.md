@@ -8,8 +8,6 @@ rank: 0
 author: 1987hasit
 ---
 
-[共读活动链接](http://www.chinahadoop.cn/course/1111/learn#lesson/20659)
-
 by [@梁斌](http://csusap.csu.edu.au/~bliang03/)
 
 [课件下载](/codereader/dataanalysis/python/python_data_analysis_slides.pdf)

@@ -1,10 +1,19 @@
-# 实战案例：Python机器学习小案例源码 -- 骨科疾病预测
-
+---
+layout: post
+title:  实战案例：Python机器学习小案例源码 -- 骨科疾病预测
+date:   2018-02-28 23:11:00 +0800
+categories: 机器学习
+tag: Python
+author: drbinliang
+rank: 10
+---
 
 **作者：** [Robin](http://wenda.chinahadoop.cn/people/Robin_TY)  
 **日期：** 2018/02  
 **提问：** [小象问答](http://wenda.chinahadoop.cn/)  
 **数据集来源：** [kaggle](https://www.kaggle.com/uciml/biomechanical-features-of-orthopedic-patients)  
+
+[共读活动链接](http://www.chinahadoop.cn/course/1111/learn#lesson/20659)
 
 ## 1. 案例描述
 近年来，人工智能（AI）发展迅速，从AlphaGo连败人类棋手，到商场里随处可见的智能机器人，人工智能已经从实验室走向了大众，不论是舆论关注度还是相关领域的投资，都在节节增长。更重要的是，人工智能技术也到达到了新的阶段，在工业界、医疗、SaaS、农业等等各行各业的应用都引起了巨大的势能。这其中，应用增长率最高的当属AI在医疗领域的应用。
@@ -27,7 +36,8 @@
 * 根据病人的6项医疗数据，推断该病人是否患有骨科疾病
 
 ## 4. 主要代码解释
-* 代码结构  
+* 代码结构 [代码链接](https://github.com/ymgd/codereader/tree/master/machinelearning/python/codes) 
+
 ```bash
 ├── data.csv        # 数据文件
 ├── main.ipynb      # jupyter notebook演示文档
