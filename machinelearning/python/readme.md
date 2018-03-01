@@ -13,7 +13,7 @@ rank: 10
 **提问：** [小象问答](http://wenda.chinahadoop.cn/)  
 **数据集来源：** [kaggle](https://www.kaggle.com/uciml/biomechanical-features-of-orthopedic-patients)  
 
-[共读活动链接](http://www.chinahadoop.cn/course/1111/learn#lesson/20659)
+[2018年3月1日源码共读](http://www.chinahadoop.cn/course/1111)
 
 ## 1. 案例描述
 近年来，人工智能（AI）发展迅速，从AlphaGo连败人类棋手，到商场里随处可见的智能机器人，人工智能已经从实验室走向了大众，不论是舆论关注度还是相关领域的投资，都在节节增长。更重要的是，人工智能技术也到达到了新的阶段，在工业界、医疗、SaaS、农业等等各行各业的应用都引起了巨大的势能。这其中，应用增长率最高的当属AI在医疗领域的应用。
