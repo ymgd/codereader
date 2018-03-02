@@ -356,6 +356,7 @@ synchronized void publishMetrics(MetricsBuffer buffer, boolean immediate) {
 
 遍历之前注册到MetricsSystem上的Sink（注册过程跟Source类似），调用他们的putMetrics方法，将buffer中的内容发送到指标的目的地。
 
+
 [1]: resources/metricsconf.png
 [2]: resources/metricsarch.png
 [3]: resources/metricscontrol.png

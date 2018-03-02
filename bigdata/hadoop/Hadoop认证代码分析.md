@@ -350,6 +350,7 @@ static void loginUserFromSubject(Subject subject) throws IOException {
 
 在以上代码加了中文注释的地方，将会触发HadoopLoginModule的login以及commit等方法，执行我们在文章第二部分描述的操作逻辑。
 
+
 [1]: resources/jaasarch.gif
 [2]: resources/jaasusage.gif
 [3]: resources/username.png
