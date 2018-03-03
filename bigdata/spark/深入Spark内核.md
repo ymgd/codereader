@@ -1,4 +1,11 @@
-# 第4章 深入Spark内核
+---
+layout: post
+title:  深入Spark内核
+date:   2018-03-03 12:57:00 +0800
+categories: Spark
+tag: Scala
+rank: 10
+---
 
 &emsp;&emsp;Spark在BDAS生态系统中处于核心地位，其他相关组件通过Spark实现对分布式并行处理任务的程序支持。本章试着从Spark内核代码实现的重要部分，来进一步剖析Spark，以加深读者对Spark设计思想与实现细节的理解。
 
@@ -1564,6 +1571,7 @@ private def ensureFreeSpace(
 
 &emsp;&emsp;本章首先与spark1.5.0的代码布局做了宏观介绍，进而对spark的执行主线做了详细剖析，从代码层面详细讲述了RDD是如何落地到worker上执行的。接着，本章又从另一个角度分析了client，master与worker之间的交互过程。最后本章深入讲述了spark的两个重要功能点及spark shuffle与spark存储机制。 学习本章的讲解后，希望读者能自行深入研究spark代码，加深对spark内部实现原理的理解。
 
-[1]: resources/model/4-1Code-Layout.png
-[2]: resources/model/4-2Spark-Sequence.png
-[3]: resources/model/4-3Spark-Sequence2.png
+
+[1]: {{ '/bigdata/spark/resources/model/4-1Code-Layout.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/model/4-2Spark-Sequence.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/model/4-3Spark-Sequence2.png' | prepend: site.baseurl  }}
