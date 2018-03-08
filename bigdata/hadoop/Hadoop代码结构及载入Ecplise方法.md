@@ -8,6 +8,7 @@ rank: 9
 author: kennethxian
 ---
 
+[2018年3月10日源码共读](http://www.chinahadoop.cn/course/1111)
 
 ## 一、项目结构
 
