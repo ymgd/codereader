@@ -1,5 +1,3 @@
-##注：此文件已移动到分支dev_mike，请管理员删除即可
-
 # 第?章 Executor解析
 
 &emsp;&emsp;Executor是Spark分布式运行的承载，其会分布在不同的Worker节点上的线程池中运行。本章节尝试通过剖析Executor的源码，以分析实现的细节，帮助读者在实际工作中定位与调试问题。
@@ -11,12 +9,25 @@
 
 ### x.y.z   Executor.scala源码解析
 
+&emsp;&emsp;此源码实现了Executor类及其伴生对象。Executor类属于Spark内核中很关键的一个组成部分，是Worker节点中Spark任务运行的承载。通过外围一系列的切分、调度、分解等，形成可运行的Task，由Worker节点上的NM容器启动执行。从此源码整体大的情况来看，Executor包含了TaskReaper和TaskRunner两个子类，还有一个私有的线程池threadPool，如下图所示：
 
-&emsp;&emsp;此源码实现了Executor类及其伴生对象。spark的Executor的线程池采用了标准的java.util.concurrent并发工具包提供的模型与接口。
+![][1]
+
+&emsp;&emsp;其中，TaskReaper用于管理杀死或取消一个Task的过程，并且需要监控这个Task直到其结束，后面进一步的源码分析会说明，TaskReaper的设计是很精妙的，考虑了用户多次发起杀死或取消的要求；TaskRunner则是包装了需要执行的Task。
+
+
+
+spark的Executor的线程池采用了标准的java.util.concurrent并发工具包提供的模型与接口。
+
+
+
+
+
+
+
 图4-1列出了Spark的代码结构及包含的重点功能模块。读者可以通过这张图，可以对Spark的主要构成及代码布局产生直观的印象。 这些模块也构成了Spark架构中的的功能组件。根据Spark的代码布局，读者可以自行查阅源码，这对于掌握Spark的实现细节，加深对Spark实现机制的理解都是非常有必要的。
 
 
-![][1]
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图4-1 Spark code layout
 
@@ -1567,6 +1578,7 @@ private def ensureFreeSpace(
 
 &emsp;&emsp;本章首先与spark1.5.0的代码布局做了宏观介绍，进而对spark的执行主线做了详细剖析，从代码层面详细讲述了RDD是如何落地到worker上执行的。接着，本章又从另一个角度分析了client，master与worker之间的交互过程。最后本章深入讲述了spark的两个重要功能点及spark shuffle与spark存储机制。 学习本章的讲解后，希望读者能自行深入研究spark代码，加深对spark内部实现原理的理解。
 
-[1]: resources/model/4-1Code-Layout.png
+[1]: resources/executor/1_executor_arch.png
+[x]: resources/model/4-1Code-Layout.png
 [2]: resources/model/4-2Spark-Sequence.png
 [3]: resources/model/4-3Spark-Sequence2.png
