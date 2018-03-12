@@ -1,4 +1,4 @@
-#NameNode源码分析-NameNode结构和功能
+# NameNode源码分析-NameNode结构和功能
 @(HDFS)[NameNode]
 在hadoop体系中，HDFS是最基础也是最核心的部分，本次hadoop源码阅读，首先会从HDFS开始，逐一从各个组件开始分析，然后细化到各个单独的features。
 >NameNode部分，主要从以下几个方面开始：
@@ -10,10 +10,10 @@
 > -  **......待续**
 
 -------
-##1.NameNode
+## 1.NameNode
 NameNode作为hdfs的master节点，负责管理整个集群元数据和集群管理功能。NameNode代码在org.apache.hadoop.hdfs.server.namenode包下。
 由于NN是通过master/slave方式管理整个集群，它的主要功能如下：
-<center>![][1]</center>
+![][1]
 
 
 1.文件系统元数据操作  
@@ -42,7 +42,7 @@ namenode用于管理datanode，包含了decommission和activities的节点，用
   private final FSEditLog editLog; //FSEditlog对象，用于写editlog
 ```
 主要方法有：
-<center>![][2]</center>
+![][2]
 
 我们详细看一下在我们调用FileSystem.create之后，在FSDirectory是如何添加文件的：    
 ```java
@@ -110,7 +110,7 @@ namenode用于管理datanode，包含了decommission和activities的节点，用
 
 **FSNamesystem**  
 FSNamesystem 是NN中最重要的类，实际记录了dn上所有的工作状态。
-<center>![][3]</center>  
+![][3]  
 
 重要的参数有  
 
@@ -122,7 +122,7 @@ FSNamesystem 是NN中最重要的类，实际记录了dn上所有的工作状态
   private final DatanodeStatistics datanodeStatistics; //用于记录dn的统计信息，例如心跳汇报等
 ```
 此类的方法很多，主要用于管理dn上报的比如心跳汇报，块汇报等，用于管理集群slave和数据块。
-<center>![][4]</center>
+![][4]
 
 我们重点看一下FSNameSystem是如何处理dn发送过来的心跳汇报的
 ```java
@@ -157,6 +157,7 @@ FSNamesystem 是NN中最重要的类，实际记录了dn上所有的工作状态
     }
   }
 ```
+
 
 [1]: resources/namenode1.png
 [2]: resources/fsdirectory.png
