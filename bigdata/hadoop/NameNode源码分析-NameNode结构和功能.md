@@ -111,7 +111,8 @@ namenode用于管理datanode，包含了decommission和activities的节点，用
 **FSNamesystem**  
 FSNamesystem 是NN中最重要的类，实际记录了dn上所有的工作状态。
 <center>![][3]</center>
-重要的参数有：  
+重要的参数有  
+
 ```java
   FSDirectory dir; FSDirectory
   private final BlockManager blockManager; //保存NN中所有数据块的元数据，用于block管理，维护这BlocksMap和接收来自dn的块汇报等
