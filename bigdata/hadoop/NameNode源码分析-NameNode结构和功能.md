@@ -1,5 +1,13 @@
-# NameNode源码分析-NameNode结构和功能
-@(HDFS)[NameNode]
+---
+layout: post
+title:  NameNode源码分析-NameNode结构和功能 
+date:   2018-03-12 18:57:00 +0800
+categories: Hadoop
+tag: Java
+author: akevy
+rank: 10
+---
+
 在hadoop体系中，HDFS是最基础也是最核心的部分，本次hadoop源码阅读，首先会从HDFS开始，逐一从各个组件开始分析，然后细化到各个单独的features。
 >NameNode部分，主要从以下几个方面开始：
 > - **NameNode 结构和功能**
@@ -159,7 +167,8 @@ FSNamesystem 是NN中最重要的类，实际记录了dn上所有的工作状态
 ```
 
 
-[1]: resources/namenode1.png
-[2]: resources/fsdirectory.png
-[3]: resources/fsnamesystem1.png
-[4]: resources/fsnamesystem2.png
+[1]: {{ '/bigdata/hadoop/resources/jaasarch.gif' | prepend: site.baseurl  }}
+[1]: {{ '/bigdata/hadoop/resources/namenode1.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/hadoop/resources/fsdirectory.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/hadoop/resources/fsnamesystem1.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/hadoop/resources/fsnamesystem2.png' | prepend: site.baseurl  }}
