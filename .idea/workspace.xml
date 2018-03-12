@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c74b643f-6541-4491-8e6e-dbc4c2c77a5e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bigdata/hadoop/NameNode源码分析-NameNode结构和功能.md" afterPath="$PROJECT_DIR$/bigdata/hadoop/NameNode源码分析-NameNode结构和功能.md" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -41,11 +40,11 @@
         <entry file="file://$PROJECT_DIR$/bigdata/hadoop/NameNode源码分析-NameNode结构和功能.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="162">
-                <caret line="114" column="0" lean-forward="false" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
+              <first_editor relative-caret-position="147">
+                <caret line="113" column="0" lean-forward="false" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
                 <folding>
-                  <marker date="1520841704000" expanded="true" signature="1526:1529" ph="/**...*/" />
-                  <marker date="1520841704000" expanded="true" signature="1526:4180" ph="/**...*/" />
+                  <marker date="1520841758000" expanded="true" signature="1526:1529" ph="/**...*/" />
+                  <marker date="1520841758000" expanded="true" signature="1526:4180" ph="/**...*/" />
                 </folding>
               </first_editor>
               <second_editor />
@@ -680,12 +679,12 @@
       <option name="presentableId" value="Default" />
       <updated>1520705734742</updated>
       <workItem from="1520705736260" duration="1126000" />
-      <workItem from="1520828391769" duration="6138000" />
+      <workItem from="1520828391769" duration="6176000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7264000" />
+    <option name="totallyTimeSpent" value="7302000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="5" y="103" width="1641" height="877" extended-state="0" />
@@ -757,8 +756,8 @@
           <first_editor relative-caret-position="0">
             <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
             <folding>
-              <marker date="1520841704000" expanded="true" signature="1526:1529" ph="/**...*/" />
-              <marker date="1520841704000" expanded="true" signature="1526:4180" ph="/**...*/" />
+              <marker date="1520841758000" expanded="true" signature="1526:1529" ph="/**...*/" />
+              <marker date="1520841758000" expanded="true" signature="1526:4180" ph="/**...*/" />
             </folding>
           </first_editor>
           <second_editor />
@@ -803,8 +802,8 @@
           <first_editor relative-caret-position="225">
             <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
             <folding>
-              <marker date="1520841704000" expanded="true" signature="1526:1529" ph="/**...*/" />
-              <marker date="1520841704000" expanded="true" signature="1526:4180" ph="/**...*/" />
+              <marker date="1520841758000" expanded="true" signature="1526:1529" ph="/**...*/" />
+              <marker date="1520841758000" expanded="true" signature="1526:4180" ph="/**...*/" />
             </folding>
           </first_editor>
           <second_editor />
@@ -863,11 +862,11 @@
     <entry file="file://$PROJECT_DIR$/bigdata/hadoop/NameNode源码分析-NameNode结构和功能.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="162">
-            <caret line="114" column="0" lean-forward="false" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
+          <first_editor relative-caret-position="147">
+            <caret line="113" column="0" lean-forward="false" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
             <folding>
-              <marker date="1520841704000" expanded="true" signature="1526:1529" ph="/**...*/" />
-              <marker date="1520841704000" expanded="true" signature="1526:4180" ph="/**...*/" />
+              <marker date="1520841758000" expanded="true" signature="1526:1529" ph="/**...*/" />
+              <marker date="1520841758000" expanded="true" signature="1526:4180" ph="/**...*/" />
             </folding>
           </first_editor>
           <second_editor />

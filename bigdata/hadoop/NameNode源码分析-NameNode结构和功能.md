@@ -110,7 +110,8 @@ namenode用于管理datanode，包含了decommission和activities的节点，用
 
 **FSNamesystem**  
 FSNamesystem 是NN中最重要的类，实际记录了dn上所有的工作状态。
-<center>![][3]</center>
+<center>![][3]</center>  
+
 重要的参数有  
 
 ```java
