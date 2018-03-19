@@ -14,6 +14,125 @@
 
 &emsp;&emsp;整体来看，这部分代码相对较长，功能较多，实现了Task相关线程的管理，包括相关线程池的建立、Task的启停、心跳信号的处理、通过ThreadMXBean获取到各种线程管理方面的信息、建立任务的各种监测指标、相关Task及其依赖的序列化或反序列化（便于发送到分布式Worker节点上执行）等等。以下尝试对其主要功能进行详细剖析：
 
+### x.y.z  Executor类的初始化
+&emsp;&emsp;Scala的主构造函数的写法比较简洁，直接写在类定义内部，而不用像Java一样需要一个与类同名的构造函数定义，这点大家在阅读源码时需要注意。可以看到，Executor类内部定义了一系列私有的成员变量，用于记录相应的属性及状态，大部分都是val不可变量，只有个别类似heartbeatFailures的可变量，很好的遵循了Scala函数式代码风格，尽可能的减少了变量带来的副作用（这点初学者可能难于理解，建议参考《Scala函数式编程》一书）。另外，也定义了一些对外的成员函数，还有最主要的TaskReaper和TaskRunner两个子类。由于Scala的类定义和主构造函数一般是写在一起的，所以阅读源码时需要注意理清初始化的逻辑主线。这里摘选了Executor类的初始化部分代码如下（其中有些次要部分使用...省略）：
+
+```scala
+[org.apache.spark.executor]
+[Executor.scala]
+...
+  logInfo(s"Starting executor ID $executorId on host $executorHostname")
+
+  // Application dependencies (added through SparkContext) that we've fetched so far on this node.
+  // Each map holds the master's timestamp for the version of that file or JAR we got.
+  private val currentFiles: HashMap[String, Long] = new HashMap[String, Long]()
+  private val currentJars: HashMap[String, Long] = new HashMap[String, Long]()
+
+  private val EMPTY_BYTE_BUFFER = ByteBuffer.wrap(new Array[Byte](0))
+
+  private val conf = env.conf
+
+  // No ip or host:port - just hostname
+  Utils.checkHost(executorHostname, "Expected executed slave to be a hostname")
+  // must not have port specified.
+  assert (0 == Utils.parseHostPort(executorHostname)._2)
+
+  // Make sure the local hostname we report matches the cluster scheduler's name for this host
+  Utils.setCustomHostname(executorHostname)
+
+  if (!isLocal) {
+    // Setup an uncaught exception handler for non-local mode.
+    // Make any thread terminations due to uncaught exceptions kill the entire
+    // executor process to avoid surprising stalls.
+    Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler)
+  }
+
+  // Start worker thread pool
+  private val threadPool = ...
+  private val executorSource = new ExecutorSource(threadPool, executorId)
+  // Pool used for threads that supervise task killing / cancellation
+  private val taskReaperPool = ThreadUtils.newDaemonCachedThreadPool("Task reaper")
+  // For tasks which are in the process of being killed, this map holds the most recently created
+  // TaskReaper. All accesses to this map should be synchronized on the map itself (this isn't
+  // a ConcurrentHashMap because we use the synchronization for purposes other than simply guarding
+  // the integrity of the map's internal state). The purpose of this map is to prevent the creation
+  // of a separate TaskReaper for every killTask() of a given task. Instead, this map allows us to
+  // track whether an existing TaskReaper fulfills the role of a TaskReaper that we would otherwise
+  // create. The map key is a task id.
+  private val taskReaperForTask: HashMap[Long, TaskReaper] = HashMap[Long, TaskReaper]()
+
+  if (!isLocal) {
+    env.metricsSystem.registerSource(executorSource)
+    env.blockManager.initialize(conf.getAppId)
+  }
+
+  // Whether to load classes in user jars before those in Spark jars
+  private val userClassPathFirst = conf.getBoolean("spark.executor.userClassPathFirst", false)
+
+  // Whether to monitor killed / interrupted tasks
+  private val taskReaperEnabled = conf.getBoolean("spark.task.reaper.enabled", false)
+
+  // Create our ClassLoader
+  // do this after SparkEnv creation so can access the SecurityManager
+  private val urlClassLoader = createClassLoader()
+  private val replClassLoader = addReplClassLoaderIfNeeded(urlClassLoader)
+
+  // Set the classloader for serializer
+  env.serializer.setDefaultClassLoader(replClassLoader)
+
+  // Max size of direct result. If task result is bigger than this, we use the block manager
+  // to send the result back.
+  private val maxDirectResultSize = ...
+
+  // Limit of bytes for total size of results (default is 1GB)
+  private val maxResultSize = Utils.getMaxResultSize(conf)
+
+  // Maintains the list of running tasks.
+  private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
+
+  // Executor for the heartbeat task.
+  private val heartbeater = ThreadUtils.newDaemonSingleThreadScheduledExecutor("driver-heartbeater")
+
+  // must be initialized before running startDriverHeartbeat()
+  private val heartbeatReceiverRef = ...
+
+  /**
+   * When an executor is unable to send heartbeats to the driver more than `HEARTBEAT_MAX_FAILURES`
+   * times, it should kill itself. The default value is 60. It means we will retry to send
+   * heartbeats about 10 minutes because the heartbeat interval is 10s.
+   */
+  private val HEARTBEAT_MAX_FAILURES = conf.getInt("spark.executor.heartbeat.maxFailures", 60)
+
+  /**
+   * Count the failure times of heartbeat. It should only be accessed in the heartbeat thread. Each
+   * successful heartbeat will reset it to 0.
+   */
+  private var heartbeatFailures = 0
+
+  startDriverHeartbeater()
+```
+
+&emsp;&emsp;可以看到，初始化过程主要分为如下几步：
+
+1. 使用logInfo输出executorId和executorHostname参数；
+1. 获取传入的SparkEnv类型参数env.conf配置信息；
+1. 检查主机名参数executorHostname，不可以为IP或者host:port的形式，并与集群scheduler中主机的名字匹配；
+1. 如果是非本地模式的话，设置默认的未捕获异常处理器，这个是构造函数的一个可选参数，默认值是SparkUncaughtExceptionHandler。主要用于当任何线程因为未捕获的异常终止时，杀死整个executor进程，以防止出现一些奇怪的且难以核查的僵尸进程情况；
+1. 创建线程池threadPool及taskReaperPool（参见后续详解）；
+1. 如果是非本地模式的话，则在传入的spark环境env（SparkEnv类型）中的相关性能监控指标体系metricsSystem中注册与工作线程池threadPool关联的执行源对象；且执行env中的块管理器blockManager的初始化工作（块管理器属于Spark内核的Storage模块，它在每一个driver和executors节点上都会运行，提供了本地或远程存取相关块数据的能力，这些块数据存放在内存、磁盘等不同的介质上，块管理器使用前必须进行初始化）；
+1. 获取spark.executor.userClassPathFirst参数，表示用户jar类库是否先于Spark类库加载；
+1. 获取spark.task.reaper.enabled参数，表示是否监控被杀死或中断的task；
+1. 获取类装载器ClassLoader（有urlClassLoader和replClassLoader两个）；
+1. 设置spark环境env的序列化器serializer的默认类装载器为replClassLoader，这个是用于反序列化时进行类装载；
+1. 设定maxDirectResultSize，如果task的结果比这个值大，就会使用块管理器blockManager传回结果；
+1. 设定maxResultSize，最大的结果集大小，默认是1GB；
+1. 建立心跳线程heartbeater；
+1. 先初始化心跳信号接收器heartbeatReceiverRef，并获取spark.executor.heartbeat.maxFailures参数（心跳信号发送最大失败次数，如果executor发送心跳信号给driver的失败次数大于这个值，那么executor就会杀死自己的相关进程），在初始化心跳失败次数变量heartbeatFailures为0之后，调用私有成员函数startDriverHeartbeater正式启动心跳；
+1. 至此，Executor类构造函数的初始化结束，后面的源码定义了一些内部或外部的成员函数，以及TaskReaper和TaskRunner两个子类。
+
+
+
+
 ### x.y.z   线程池threadPool及taskReaperPool详解
 &emsp;&emsp;线程池threadPool用于管理具体工作线程，其通过com.google.common.util.concurrent.ThreadFactoryBuilder建立线程工厂，再通过标准的java.util.concurrent并发工具包提供的Executors.newCachedThreadPool建立线程池。详见如下源码：
 
