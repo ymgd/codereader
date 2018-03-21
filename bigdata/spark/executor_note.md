@@ -184,6 +184,28 @@ import org.apache.spark.util._
 ```
 &emsp;&emsp;可以从以上代码的注释看到，为了防止每一次调用killTask都去生成一个独立的TaskReaper，需要一个称为taskReaperForTask的哈希表（哈希key是task id），我们可以根据这个哈希表去跟踪一个已有的TaskReaper是否已经完成了它的功能（杀死或取消Task），而不是去重新再新建一个TaskReaper。另外，考虑到我们需要的同步并不是简单的维护哈希表的内部状态就可以了，而是应该有更多的原子性方面的要求，所以我们没有使用并行哈希表ConcurrentHashMap，而是使用了普通的HashMap，并在访问时通过synchonrized实现同步。
 
+### x.y.z   子类TaskRunner详解
+
+&emsp;&emsp;可以看到，TaskRunner子类实现了Runnable接口，说明这个子类的实例是需要由一个线程来执行的，可以着重关注其中的run方法。源码类定义的前面部分为该子类的初始化，需要注意的是，@volatile注解表示这个变量可以被多个线程同时更新，@GuardedBy("TaskRunner.this")注解表示后面这个变量只有获取了TaskRunner子类当前实例上的锁之后，才能访问。下面对该类的主干run方法进行分析：
+
+1. 创建threadMXBean、taskMemoryManager、deserializeStartTime、deserializeStartCpuTime等管理量；
+1. 设定replClassLoader为当前线程的类加载器；
+1. 建立spark环境中的序列化器env.closureSerializer的实例；
+1. 输出包含taskId及taskName的task日志、更新task状态；
+1. 然后进入一段被try包裹的真正反序列化、加载并执行task的代码，这段代码包括如下功能：
+  1. 设置反序列化参数、更新依赖；
+  1. 通过env.closureSerializer的实例对taskDescription.serializedTask进行反序列化；
+  1. 设置task属性并传入taskMemoryManager；
+  1. 判断在反序列化之前，该task是否已经被杀了，如果确实如此需要抛出TaskKilledException异常（源代码注释里面也解释了为啥不用return）；
+  1. 输出包含taskId和task.epoch的调试日志；
+  1. 记录task开始时间及当前线程cpu占用时间；
+  1. 后续通过一个try...finally组合真正启动刚才反序列化的task，而且最后能执行一系列的清理工作。
+
+
+
+
+
+
 
 
 
