@@ -186,7 +186,13 @@ import org.apache.spark.util._
 
 ### x.y.z   子类TaskRunner详解
 
-&emsp;&emsp;可以看到，TaskRunner子类实现了Runnable接口，说明这个子类的实例是需要由一个线程来执行的，可以着重关注其中的run方法。源码类定义的前面部分为该子类的初始化，需要注意的是，@volatile注解表示这个变量可以被多个线程同时更新，@GuardedBy("TaskRunner.this")注解表示后面这个变量只有获取了TaskRunner子类当前实例上的锁之后，才能访问。下面对该类的主干run方法进行分析：
+&emsp;&emsp;可以看到，TaskRunner子类实现了Runnable接口，说明这个子类的实例是需要由一个线程来执行的，可以着重关注其中的run方法。源码类定义的前面部分为该子类的初始化，需要注意的是，@volatile注解表示这个变量可以被多个线程同时更新，@GuardedBy("TaskRunner.this")注解表示后面这个变量只有获取了TaskRunner子类当前实例上的锁之后，才能访问。
+
+&emsp;&emsp;其实TaskRunner就是把spark的一个Task包装起来运行，关于这个Task可以参考org.apache.spark.scheduler.Task类定义。spark中的Task分为两类：ShuffleMapTask和ResultTask。spark的job分为一个或多个stage，最后一个stage包括一些ResultTask，之前的stage包括许多ShuffleMapTask。Task抽象类中包含了成员函数Run和一个空的RunTask，实际上，两类具体的Task都对基类的RunTask进行了重载，而且都增加了taskBinary的初始传入参数，在运行中对taskBinary进行反序列化从而完成一定的任务，如下图所示：
+
+![][2]
+
+&emsp;&emsp;对于两类Task源码的进一步解读将在分析scheduler时深入进行。下面回到主线，对TaskRunner类的主干run方法进行分析：
 
 1. 创建threadMXBean、taskMemoryManager、deserializeStartTime、deserializeStartCpuTime等管理量；
 1. 设定replClassLoader为当前线程的类加载器；
@@ -194,14 +200,23 @@ import org.apache.spark.util._
 1. 输出包含taskId及taskName的task日志、更新task状态；
 1. 然后进入一段被try包裹的真正反序列化、加载并执行task的代码，这段代码包括如下功能：
   1. 设置反序列化参数、更新依赖；
+
   1. 通过env.closureSerializer的实例对taskDescription.serializedTask进行反序列化；
+
   1. 设置task属性并传入taskMemoryManager；
+
   1. 判断在反序列化之前，该task是否已经被杀了，如果确实如此需要抛出TaskKilledException异常（源代码注释里面也解释了为啥不用return）；
+
   1. 输出包含taskId和task.epoch的调试日志；
+
   1. 记录task开始时间及当前线程cpu占用时间；
-  1. 后续通过一个try...finally组合真正启动刚才反序列化的task，而且最后能执行一系列的清理工作。
 
+  1. 设定一个threwException的布尔标志，用以表示在具体的task执行过程中是否有异常；
 
+  1. 再次使用一个try...finally组合，通过调用task.run真正启动刚才反序列化的task，try中间仅仅包含了task.run代码，且将返回值传给value，最后的finally包含释放task的锁及清理内存等功能。需要注意的是，如果这里task.run的内部抛出了异常，虽然finally的清理工作仍会执行，但是后续会继续将这个异常抛向外层的catch子句，而且由于包含了!threwException条件，这里finally清理工作之后判断内存泄漏和各种锁是否释放干净的逻辑其实就没啥用了，外层只会得到task.run内部异常信息；
+  1. 记录task结束时间及线程cpu占用；
+
+     ​
 
 
 
@@ -210,6 +225,4 @@ import org.apache.spark.util._
 
 
 [1]: resources/executor/1_executor_arch.png
-[x]: resources/model/4-1Code-Layout.png
-[2]: resources/model/4-2Spark-Sequence.png
-[3]: resources/model/4-3Spark-Sequence2.png
+[2]: resources/executor/2_task_type.png
