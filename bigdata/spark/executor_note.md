@@ -188,7 +188,7 @@ import org.apache.spark.util._
 
 &emsp;&emsp;可以看到，TaskRunner子类实现了Runnable接口，说明这个子类的实例是需要由一个线程来执行的，可以着重关注其中的run方法。源码类定义的前面部分为该子类的初始化，需要注意的是，@volatile注解表示这个变量可以被多个线程同时更新，@GuardedBy("TaskRunner.this")注解表示后面这个变量只有获取了TaskRunner子类当前实例上的锁之后，才能访问。
 
-&emsp;&emsp;其实TaskRunner就是把spark的一个Task包装起来运行，关于这个Task可以参考org.apache.spark.scheduler.Task类定义。spark中的Task分为两类：ShuffleMapTask和ResultTask。spark的job分为一个或多个stage，最后一个stage包括一些ResultTask，之前的stage包括许多ShuffleMapTask。Task抽象类中包含了成员函数Run和一个空的RunTask，实际上，两类具体的Task都对基类的RunTask进行了重载，而且都增加了taskBinary的初始传入参数，在运行中对taskBinary进行反序列化从而完成一定的任务，如下图所示：
+&emsp;&emsp;其实TaskRunner就是把spark的一个Task包装起来运行，关于这个Task可以参考org.apache.spark.scheduler.Task类定义。spark中的Task分为两类：ShuffleMapTask和ResultTask，ShuffleMapTask和ResultTask类似于Hadoop中的Map和Reduce。spark的job分为一个或多个stage，最后一个stage包括一些ResultTask，之前的stage包括许多ShuffleMapTask。Task抽象类中包含了成员函数Run和一个空的RunTask，实际上，两类具体的Task都对基类的RunTask进行了重载，而且都增加了taskBinary的初始传入参数，在运行中对taskBinary进行反序列化从而完成一定的任务，如下图所示：
 
 ![][2]
 
