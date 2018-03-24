@@ -1,4 +1,12 @@
-# Spark2.X---Deploy模块解析 #
+---
+layout: post
+title:  Spark2.X-Deploy模块解析
+date:   2018-03-24 22:57:00 +0800
+categories: Spark
+tag: Scala
+author: shuitai
+rank: 10
+---
 
 
 ## 1.	模块整体架构   ##
@@ -24,19 +32,24 @@ Executor：
 
 Standalone有两种部署模式，client和cluster  
 Client模式: 即Driver运行在Client。  
-![](resources/images/1.png)
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图1 Client模式下交互图  
+
+![][1]
+
+图1 Client模式下交互图  
 更详细的架构图如下：
-![](resources/images/2.png)
+
+![][2]
 
 Cluster模式: Driver运行在Executor。  
-![](resources/images/3.png)  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图2 Cluster模式下交互图  
+![][3]  
+
+图2 Cluster模式下交互图  
 更详细的架构图如下：
-![](resources/images/4.png) 
+![][4]
 
 ## 2.消息传递机制详解 ##
 
-![](resources/images/5.png) 
+![][5]
 
 2.1 Master和Worker  
 
@@ -219,7 +232,7 @@ Executor模块是负责运行Task计算任务，并将结果返回给Driver，�
 
 下面主要介绍Standalone模式下Executor模块交互过程
 
-![](resources/images/6.png)
+![][6]
 
 Step1- 4: SchedulerBackend创建StandaloneAppClient
 
@@ -434,3 +447,9 @@ case RegisteredExecutor=>
 ```
 
 
+[1]: {{ '/bigdata/spark/resources/images/1.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/images/2.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/images/3.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/spark/resources/images/4.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/spark/resources/images/5.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/spark/resources/images/6.png' | prepend: site.baseurl  }}
