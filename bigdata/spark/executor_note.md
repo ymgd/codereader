@@ -200,23 +200,23 @@ import org.apache.spark.util._
 1. 输出包含taskId及taskName的task日志、更新task状态；
 1. 然后进入一段被try包裹的真正反序列化、加载并执行task的代码，这段代码包括如下功能：
   1. 设置反序列化参数、更新依赖；
-
   1. 通过env.closureSerializer的实例对taskDescription.serializedTask进行反序列化；
-
   1. 设置task属性并传入taskMemoryManager；
-
   1. 判断在反序列化之前，该task是否已经被杀了，如果确实如此需要抛出TaskKilledException异常（源代码注释里面也解释了为啥不用return）；
-
   1. 输出包含taskId和task.epoch的调试日志；
-
   1. 记录task开始时间及当前线程cpu占用时间；
-
   1. 设定一个threwException的布尔标志，用以表示在具体的task执行过程中是否有异常；
-
   1. 再次使用一个try...finally组合，通过调用task.run真正启动刚才反序列化的task，try中间仅仅包含了task.run代码，且将返回值传给value，最后的finally包含释放task的锁及清理内存等功能。需要注意的是，如果这里task.run的内部抛出了异常，虽然finally的清理工作仍会执行，但是后续会继续将这个异常抛向外层的catch子句，而且由于包含了!threwException条件，这里finally清理工作之后判断内存泄漏和各种锁是否释放干净的逻辑其实就没啥用了，外层只会得到task.run内部异常信息；
   1. 记录task结束时间及线程cpu占用；
+  1. 将task的结果value序列化成valueBytes，并与汇聚的结果accumUpdates合并成DirectTaskResult对象，再把它序列化形成serializedDirectResult。如果结果大小大于maxResultSize，则丢弃它；如果大于maxDirectResultSize，则通过blockManager传送；否则，就直接发送给driver。
+1. 进入刚才try的catch段，开始处理各种异常。这里面，需要判断是否是被用户代码包含的task内部的异常，或者是task被杀，或者task中断，或者是task向HDFS提交输出时被driver拒绝，对于其它异常则会取得最新的汇聚值accums，并和具体异常信息一起打包序列化提供给driver；
+1. 最后的finally段，做收尾工作，从runningTasks的并发HashMap中移除当前的taskId。
 
-     ​
+&emsp;&emsp;至此，子类TaskRunner源码解读完毕，总的来说，TaskRunner从很高的抽象度上封装了task执行过程中所需要的一系列资源的监控、与driver之间的通信，包括具体task执行体、参数、结果集、异常等信息的序列化、反序列化等工作。通过这部分源码，TaskRunner很好的完成了一个具体task执行过程中需要考虑的方方面面的工作。
+
+### x.y.z   子类TaskReaper详解
+
+
 
 
 
