@@ -1,3 +1,13 @@
+---
+layout: post
+title:  XSS那些事儿
+date:   2018-04-05 10:42:00 +0800
+categories: Web
+tag: Javascript
+author: MySunshine
+rank: 10
+---
+
 # XSS那些事儿
 
 ## XSS简介
@@ -263,7 +273,9 @@ http://127.0.0.1/xss/level1.php?name=test
 
 于是考虑on事件来触发弹窗，于是构造Payload如下：
 
-'onmouseover='alert(1)'
+```javascript
+onmouseover='alert(1)'
+```
 
 通过鼠标移动事件，成功弹窗。
 
@@ -276,21 +288,21 @@ http://127.0.0.1/xss/level1.php?name=test
 Web安全之XSS是前端安全重要的一环，需要引起足够的重视。XSS运用灵活，姿势多变，配合CSRF等漏洞，可能产生不一样的效果。
 
 
-[1]: resources/xss1.png
-[2]: resources/xss2.png
-[3]: resources/xss3.png
-[4]: resources/xss4.png
-[5]: resources/xss5.png
-[6]: resources/xss6.png
-[7]: resources/xss7.png
-[8]: resources/xss8.png
-[9]: resources/xss9.png
-[10]: resources/xss10.png
-[11]: resources/xss11.png
-[12]: resources/xss12.png
-[13]: resources/xss13.png
-[14]: resources/xss14.png
-[15]: resources/xss15.png
-[16]: resources/xss16.png
-[17]: resources/xss17.png
-[18]: resources/xss18.png
+[1]: {{ '/web/resources/xss1.png' | prepend: site.baseurl  }}
+[2]: {{ '/web/resources/xss2.png' | prepend: site.baseurl  }}
+[3]: {{ '/web/resources/xss3.png' | prepend: site.baseurl  }}
+[4]: {{ '/web/resources/xss4.png' | prepend: site.baseurl  }}
+[5]: {{ '/web/resources/xss5.png' | prepend: site.baseurl  }}
+[6]: {{ '/web/resources/xss6.png' | prepend: site.baseurl  }}
+[7]: {{ '/web/resources/xss7.png' | prepend: site.baseurl  }}
+[8]: {{ '/web/resources/xss8.png' | prepend: site.baseurl  }}
+[9]: {{ '/web/resources/xss9.png' | prepend: site.baseurl  }}
+[10]: {{ '/web/resources/xss10.png' | prepend: site.baseurl  }}
+[11]: {{ '/web/resources/xss11.png' | prepend: site.baseurl  }}
+[12]: {{ '/web/resources/xss12.png' | prepend: site.baseurl  }}
+[13]: {{ '/web/resources/xss13.png' | prepend: site.baseurl  }}
+[14]: {{ '/web/resources/xss14.png' | prepend: site.baseurl  }}
+[15]: {{ '/web/resources/xss15.png' | prepend: site.baseurl  }}
+[16]: {{ '/web/resources/xss16.png' | prepend: site.baseurl  }}
+[17]: {{ '/web/resources/xss17.png' | prepend: site.baseurl  }}
+[18]: {{ '/web/resources/xss18.png' | prepend: site.baseurl  }}
