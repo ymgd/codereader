@@ -4,7 +4,7 @@ title:  XSS那些事儿
 date:   2018-04-05 10:42:00 +0800
 categories: Web
 tag: Javascript
-author: MySunshine
+author: jwx0539
 rank: 10
 ---
 
