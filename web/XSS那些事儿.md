@@ -8,8 +8,6 @@ author: jwx0539
 rank: 10
 ---
 
-# XSS那些事儿
-
 ## XSS简介
 
 XSS被称为跨站脚本攻击（Cross-Site Scripting，由于和CSS（层叠样式表Cascading Style Sheets）重名，故简称为XSS。
