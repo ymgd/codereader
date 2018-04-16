@@ -1,4 +1,13 @@
-# Spark代码结构及载入Ecplise方法
+---
+layout: post
+title:  Spark代码结构及载入Ecplise方法
+date:   2018-4-16 15:37:00 +0800
+categories: Spark
+tag: Scala
+author: beliefer
+rank: 10
+---
+
 
 ## 项目结构
 
@@ -187,21 +196,21 @@ Eclipse在对项目编译时，可能会出现很多错误，只要仔细分析�
 
 读者也可以在Spark源码中设置断点，进行跟踪调试。
 
-[1]: resources/images/Spark_arch_1.png
-[2]: resources/images/Spark_arch_2.png
-[3]: resources/images/Spark_arch_3.png
-[4]: resources/images/Spark_arch_4.png
-[5]: resources/images/Spark_arch_5.png
-[6]: resources/images/Spark_arch_6.png
-[7]: resources/images/Spark_arch_7.png
-[8]: resources/images/Spark_arch_8.png
-[9]: resources/images/Spark_arch_9.png
-[10]: resources/images/Spark_arch_10.png
-[11]: resources/images/Spark_arch_11.png
-[12]: resources/images/Spark_arch_12.png
-[13]: resources/images/Spark_arch_13.png
-[14]: resources/images/Spark_arch_14.png
-[15]: resources/images/Spark_arch_15.png
-[16]: resources/images/Spark_arch_16.png
-[17]: resources/images/Spark_arch_17.png
-[18]: resources/images/Spark_arch_18.png
+[1]: {{ '/bigdata/spark/resources/images/Spark_arch_1.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/images/Spark_arch_2.png' | prepend: site.baseurl  }}
+[3]: {{ '/bigdata/spark/resources/images/Spark_arch_3.png' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/spark/resources/images/Spark_arch_4.png' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/spark/resources/images/Spark_arch_5.png' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/spark/resources/images/Spark_arch_6.png' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/spark/resources/images/Spark_arch_7.png' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/spark/resources/images/Spark_arch_8.png' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/spark/resources/images/Spark_arch_9.png' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/spark/resources/images/Spark_arch_10.png' | prepend: site.baseurl  }}
+[11]: {{ '/bigdata/spark/resources/images/Spark_arch_11.png' | prepend: site.baseurl  }}
+[12]: {{ '/bigdata/spark/resources/images/Spark_arch_12.png' | prepend: site.baseurl  }}
+[13]: {{ '/bigdata/spark/resources/images/Spark_arch_13.png' | prepend: site.baseurl  }}
+[14]: {{ '/bigdata/spark/resources/images/Spark_arch_14.png' | prepend: site.baseurl  }}
+[15]: {{ '/bigdata/spark/resources/images/Spark_arch_15.png' | prepend: site.baseurl  }}
+[16]: {{ '/bigdata/spark/resources/images/Spark_arch_16.png' | prepend: site.baseurl  }}
+[17]: {{ '/bigdata/spark/resources/images/Spark_arch_17.png' | prepend: site.baseurl  }}
+[18]: {{ '/bigdata/spark/resources/images/Spark_arch_18.png' | prepend: site.baseurl  }}
