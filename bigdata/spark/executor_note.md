@@ -216,6 +216,10 @@ import org.apache.spark.util._
 
 ### x.y.z   子类TaskReaper详解
 
+&emsp;&emsp;子类TaskReaper主要用于杀死或者取消一个任务，它通过给具体任务发送中断标志，必要时发送中断线程调用Thread.interrupt()，并且监视这个任务直到它结束。Spark的任务杀死或取消机制的原则是：尽最大努力，因为有一些被标示为被杀的任务实际上并没有终止，这些僵尸任务占用了很多资源，导致新任务无法分配到必需的资源，处于资源饥饿状态。子类TaskReaper是在SPARK-18761更新任务时引入的，它提供了一种对僵尸任务的监控及清除机制，为了与以往的版本兼容，这个组件是需要显式的设置参数spark.task.reaper.enabled=true，才能打开。
+
+&emsp;&emsp;一般的，一个任务只对应1个TaskReaper实例；不过，当Task的kill方法传入不同的interruptThread参数调用2次时，最多一个任务也能对应2个TaskReaper实例。一旦TaskReaper实例被创建，它将一直运行到它所负责监控的任务结束运行。
+
 
 
 
