@@ -1,4 +1,13 @@
-# 构建IoTHub及智能应用
+---
+layout: post
+title:  构建IoTHub及智能应用
+date:   2018-04-24 13:48:00 +0800
+categories: ELK
+author: coming0524
+tag: Java
+rank: 10
+---
+
 
 ## 项目背景
 自从2016年AlphaGo击败人类围棋选手，将时代带入了人工智能时代。无论机器机器学习还是深度学习，都依赖于数据。所以我们不得不回顾下这个10年在IT业中重要的名词。
@@ -484,20 +493,20 @@ cv2.destroyAllWindows()
 确认kibana是否已经有数据进行传入。本次实验到这里。谢谢大家。
 
 
-[1]: resources/001.JPG
-[2]: resources/002.JPG
-[4]: resources/004.JPG
-[5]: resources/005.JPG
-[6]: resources/006.JPG
-[7]: resources/007.JPG
-[8]: resources/008.JPG
-[9]: resources/009.JPG
-[10]: resources/010.JPG
-[11]: resources/011.JPG
-[12]: resources/012.JPG
-[13]: resources/013.JPG
-[14]: resources/014.JPG
-[15]: resources/015.JPG
+[1]: {{ '/bigdata/ELK/Mydc/resources/001.JPG' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/ELK/Mydc/resources/002.JPG' | prepend: site.baseurl  }}
+[4]: {{ '/bigdata/ELK/Mydc/resources/004.JPG' | prepend: site.baseurl  }}
+[5]: {{ '/bigdata/ELK/Mydc/resources/005.JPG' | prepend: site.baseurl  }}
+[6]: {{ '/bigdata/ELK/Mydc/resources/006.JPG' | prepend: site.baseurl  }}
+[7]: {{ '/bigdata/ELK/Mydc/resources/007.JPG' | prepend: site.baseurl  }}
+[8]: {{ '/bigdata/ELK/Mydc/resources/008.JPG' | prepend: site.baseurl  }}
+[9]: {{ '/bigdata/ELK/Mydc/resources/009.JPG' | prepend: site.baseurl  }}
+[10]: {{ '/bigdata/ELK/Mydc/resources/010.JPG' | prepend: site.baseurl  }}
+[11]: {{ '/bigdata/ELK/Mydc/resources/011.JPG' | prepend: site.baseurl  }}
+[12]: {{ '/bigdata/ELK/Mydc/resources/012.JPG' | prepend: site.baseurl  }}
+[13]: {{ '/bigdata/ELK/Mydc/resources/013.JPG' | prepend: site.baseurl  }}
+[14]: {{ '/bigdata/ELK/Mydc/resources/014.JPG' | prepend: site.baseurl  }}
+[15]: {{ '/bigdata/ELK/Mydc/resources/015.JPG' | prepend: site.baseurl  }}
 
 
 
