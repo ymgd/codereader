@@ -1,4 +1,12 @@
-# 第2章 Executor解析
+---
+layout: post
+title:  Executor解析
+date:   2018-05-27 10:20:00 +0800
+categories: Spark
+author: Mike
+tag: Java
+rank: 10
+---
 
 &emsp;&emsp;Executor是Spark分布式运行的承载，其会分布在不同的Worker节点上的线程池中运行。本章节尝试通过剖析Executor的源码Executor.scala，以分析实现的细节，帮助读者在实际工作中定位与调试问题。
 
@@ -242,12 +250,5 @@ while (!finished && !timeoutExceeded()) {
 &emsp;&emsp;至此，子类TaskReaper解析完毕，这个子类比较短，阅读源码的时候注意并发的一些特殊处理就可以了。
 
 
-
-
-
-
-
-
-
-[1]: resources/executor/1_executor_arch.png
-[2]: resources/executor/2_task_type.png
+[1]: {{ '/bigdata/spark/resources/executor/1_executor_arch.png' | prepend: site.baseurl  }}
+[2]: {{ '/bigdata/spark/resources/executor/2_task_type.png' | prepend: site.baseurl  }}
