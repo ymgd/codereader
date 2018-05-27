@@ -3,7 +3,7 @@ layout: post
 title:  Executor解析
 date:   2018-05-27 10:20:00 +0800
 categories: Spark
-author: Mike
+author: heminhao
 tag: Java
 rank: 10
 ---
