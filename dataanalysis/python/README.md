@@ -33,6 +33,7 @@ by [@梁斌](http://wenda.chinahadoop.cn/people/Robin_TY)
 
 * [Python2.7官方文档](https://docs.python.org/2.7/tutorial/)
 * [Python教程资料总结](https://wiki.python.org/moin/BeginnersGuide/Programmers)
+* [学习 Python 编程](https://www.scaler.com/topics/python/)
 
 ### 2.4 常用的数据分析Python库
 
